@@ -144,22 +144,71 @@
           }
         }
       },
-      "Error": {
+      "Pagination": {
         "type": "object",
+        "description": "Included on paginated list endpoints only",
         "properties": {
-          "message": {
-            "type": "string",
-            "example": "Invalid credentials"
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "example": 20
+          },
+          "total": {
+            "type": "integer",
+            "example": 100
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 5
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "example": true
+          },
+          "hasPrevPage": {
+            "type": "boolean",
+            "example": false
           }
         }
       },
-      "ValidationError": {
+      "SuccessResponseUser": {
         "type": "object",
         "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          },
           "message": {
             "type": "string",
-            "description": "First validation error message",
-            "example": "Invalid email address"
+            "example": "User registered successfully"
+          }
+        }
+      },
+      "SuccessResponseLogin": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LoginResponse"
+          },
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          }
+        }
+      },
+      "ApiErrorResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "null",
+            "nullable": true,
+            "example": null
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid credentials"
           },
           "details": {
             "type": "array",
@@ -225,7 +274,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/SuccessResponseUser"
                 }
               }
             }
@@ -235,7 +284,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -245,7 +294,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -276,7 +325,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
+                  "$ref": "#/components/schemas/SuccessResponseLogin"
                 }
               }
             }
@@ -286,14 +335,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ValidationError"
-                    },
-                    {
-                      "$ref": "#/components/schemas/Error"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -318,7 +360,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/SuccessResponseUser"
                 }
               }
             }
@@ -328,7 +370,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -338,7 +380,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
