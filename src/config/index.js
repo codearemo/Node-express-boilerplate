@@ -9,7 +9,10 @@ function parseCommaSeparatedList(value) {
     return [];
   }
 
-  return value.split(',').map((item) => item.trim()).filter(Boolean);
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 const config = {
