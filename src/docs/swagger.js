@@ -296,9 +296,7 @@ const options = {
           example: {
             data: null,
             message: 'Validation failed',
-            details: [
-              { field: 'email', message: 'Invalid email address' },
-            ],
+            details: [{ field: 'email', message: 'Invalid email address' }],
           },
         },
         ApiAuthRequiredError: {
