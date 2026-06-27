@@ -119,6 +119,7 @@ describe('Auth API', () => {
             email: 'jane@example.com',
           },
           token: expect.any(String),
+          refreshToken: expect.any(String),
         },
       });
       expect(response.body.data.user.password).toBeUndefined();
@@ -144,6 +145,19 @@ describe('Auth API', () => {
         data: null,
         message: 'Invalid credentials',
       });
+    });
+
+    it('returns 403 when the account is inactive', async () => {
+      const UsersModel = require('../../src/modules/users/models/users.model.mongo');
+
+      await UsersModel.updateOne({ username: 'jane' }, { status: 'inactive' });
+
+      const response = await request(app)
+        .post(`${API}/auth/login`)
+        .send({ identifier: 'jane', password: VALID_PASSWORD });
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe('Account is inactive');
     });
 
     it('returns 413 when the JSON body exceeds the size limit', async () => {

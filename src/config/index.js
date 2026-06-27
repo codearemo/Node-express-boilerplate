@@ -26,7 +26,10 @@ const config = {
     return process.env.JWT_SECRET;
   },
   get JWT_EXPIRES_IN() {
-    return process.env.JWT_EXPIRES_IN || '7d';
+    return process.env.JWT_EXPIRES_IN || '15m';
+  },
+  get JWT_REFRESH_EXPIRES_IN() {
+    return process.env.JWT_REFRESH_EXPIRES_IN || '7d';
   },
   get passwordResetExpiresMinutes() {
     return Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES) || 60;
@@ -117,6 +120,16 @@ const config = {
           Number(process.env.RATE_LIMIT_RESET_PASSWORD_WINDOW_MS) ||
           authWindowMs,
         max: Number(process.env.RATE_LIMIT_RESET_PASSWORD_MAX) || 10,
+      },
+      refresh: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_REFRESH_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_REFRESH_MAX) || 20,
+      },
+      logout: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_LOGOUT_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_LOGOUT_MAX) || 20,
       },
       upload: {
         windowMs:

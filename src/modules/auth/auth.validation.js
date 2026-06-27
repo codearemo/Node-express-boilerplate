@@ -49,6 +49,13 @@ const resetPasswordSchema = z.object({
   password: passwordField,
 });
 
+const refreshTokenSchema = z.object({
+  refreshToken: z
+    .string({ error: 'Refresh token is required' })
+    .trim()
+    .min(1, 'Refresh token is required'),
+});
+
 function isEmail(value) {
   return z.email().safeParse(value).success;
 }
@@ -106,10 +113,21 @@ function validateResetPassword(body) {
   return result.data;
 }
 
+function validateRefreshToken(body) {
+  const result = refreshTokenSchema.safeParse(body);
+
+  if (!result.success) {
+    throw formatZodError(result.error);
+  }
+
+  return result.data;
+}
+
 module.exports = {
   validateRegister,
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
+  validateRefreshToken,
   isEmail,
 };

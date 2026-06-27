@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "1890cd85-4d47-49e6-a459-62544dbd9af4",
+      "id": "ff1f65fd-fa51-4995-b11a-83b782aca2da",
       "name": "Health check",
       "request": {
         "name": "Health check",
@@ -30,7 +30,7 @@
       },
       "response": [
         {
-          "id": "46afd6a3-780a-4801-92cf-80d0b003466a",
+          "id": "8063fc90-c4d4-4634-80d4-2c3c24172d0b",
           "name": "Server and database are healthy",
           "originalRequest": {
             "url": {
@@ -65,7 +65,7 @@
           "_postman_previewlanguage": "json"
         },
         {
-          "id": "f29e625c-d692-441d-b421-dc88e6cab585",
+          "id": "1f76d179-fbaa-490d-98d2-65bad4b4b763",
           "name": "Database unavailable",
           "originalRequest": {
             "url": {
@@ -106,15 +106,15 @@
       }
     },
     {
-      "id": "fb1dc5c0-cc36-4100-863d-473e5db3976b",
+      "id": "d035c465-ab5d-4ec5-8b49-72138a34137c",
       "name": "api/v1",
       "item": [
         {
-          "id": "c01e36a2-c135-4628-92fe-d2d2c8d1b2c6",
+          "id": "4245807e-0348-40c4-905e-ea260bdb6e08",
           "name": "auth",
           "item": [
             {
-              "id": "5db86845-a11a-4794-8830-5ccf7eef568f",
+              "id": "236b0457-4450-450d-b4a0-661df0183519",
               "name": "Register a new user",
               "request": {
                 "name": "Register a new user",
@@ -156,7 +156,7 @@
               },
               "response": [
                 {
-                  "id": "12e35b55-cad4-43a7-a89e-df90e024c1f9",
+                  "id": "d8078883-ab50-4764-90af-754ebd569917",
                   "name": "User created",
                   "originalRequest": {
                     "url": {
@@ -197,12 +197,12 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n  \"data\": {\n    \"_id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"1980-05-12T17:24:22.289Z\",\n    \"updatedAt\": \"1976-04-27T02:25:11.383Z\"\n  },\n  \"message\": \"User registered successfully\"\n}",
+                  "body": "{\n  \"data\": {\n    \"_id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"2008-12-25T13:00:35.052Z\",\n    \"updatedAt\": \"1964-04-06T07:58:32.723Z\"\n  },\n  \"message\": \"User registered successfully\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "d64ad842-96b7-4364-a79b-7a7ed51cf37d",
+                  "id": "14e4a782-49bd-4cc1-9143-7b2f1d18a55b",
                   "name": "Validation failed",
                   "originalRequest": {
                     "url": {
@@ -248,7 +248,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "05834046-9e07-42cb-b6b4-85b0fa3f94dc",
+                  "id": "8482a0ed-5003-4835-b9e2-2908872bb220",
                   "name": "Email or username already in use",
                   "originalRequest": {
                     "url": {
@@ -294,7 +294,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "dc4529da-5855-49b1-b08b-ed3bdffdb24d",
+                  "id": "11c75841-d4e2-462c-8566-7f07b033ea78",
                   "name": "JSON body exceeds JSON_BODY_LIMIT",
                   "originalRequest": {
                     "url": {
@@ -340,7 +340,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "f2645525-adf7-4a3b-b5f0-fc844dc60bba",
+                  "id": "2ae727ee-4f78-4ae5-92e5-a189e52899d5",
                   "name": "Too many registration attempts from this IP",
                   "originalRequest": {
                     "url": {
@@ -392,12 +392,12 @@
               }
             },
             {
-              "id": "20fd93bf-95a0-4956-adb7-97522d521224",
+              "id": "7bdcb7b4-24d0-4f2c-b2e7-2e147637828c",
               "name": "Log in with email or username",
               "request": {
                 "name": "Log in with email or username",
                 "description": {
-                  "content": "Send a single `identifier` (email or username) and `password`.\nReturns a JWT in `token` — use it as `Authorization: Bearer <token>` on protected routes.\n",
+                  "content": "Send a single `identifier` (email or username) and `password`.\nReturns a short-lived access JWT in `token` and a long-lived `refreshToken`.\nUse `token` as `Authorization: Bearer <token>` on protected routes.\nWhen `token` expires, call `POST /auth/refresh` with `refreshToken`.\n",
                   "type": "text/plain"
                 },
                 "url": {
@@ -437,7 +437,7 @@
               },
               "response": [
                 {
-                  "id": "be4d340c-3323-4881-b579-4f410f3ccd24",
+                  "id": "5e6dabbb-1dc2-4b1e-bbaa-393918d0f1a2",
                   "name": "Login successful",
                   "originalRequest": {
                     "url": {
@@ -478,12 +478,12 @@
                       "value": "application/json"
                     }
                   ],
-                  "body": "{\n  \"data\": {\n    \"user\": {\n      \"_id\": \"664a1b2c3d4e5f678901234\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"username\": \"jane\",\n      \"email\": \"jane@example.com\",\n      \"bio\": \"string\",\n      \"status\": \"active\",\n      \"createdAt\": \"1947-06-27T17:42:06.101Z\",\n      \"updatedAt\": \"1953-03-25T21:00:43.923Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  },\n  \"message\": \"Login successful\"\n}",
+                  "body": "{\n  \"data\": {\n    \"user\": {\n      \"_id\": \"664a1b2c3d4e5f678901234\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"username\": \"jane\",\n      \"email\": \"jane@example.com\",\n      \"bio\": \"string\",\n      \"status\": \"active\",\n      \"createdAt\": \"1964-12-07T07:34:17.373Z\",\n      \"updatedAt\": \"1951-06-30T12:33:28.407Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Login successful\"\n}",
                   "cookie": [],
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "6a8f6f75-ff1c-4db6-a4ce-7d18ec5fdf9b",
+                  "id": "abb17962-dcaa-4bcd-9c74-f669ed69dc62",
                   "name": "Validation failed or invalid credentials",
                   "originalRequest": {
                     "url": {
@@ -529,7 +529,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "c3cb267f-adc5-46db-8776-5dae59f96498",
+                  "id": "0bc49fb3-178b-446f-9d23-17cd726f7a6a",
                   "name": "JSON body exceeds JSON_BODY_LIMIT",
                   "originalRequest": {
                     "url": {
@@ -575,7 +575,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "a8969cbe-6ff7-42e2-91ce-4fe29040d9f5",
+                  "id": "3273fef5-86c5-48ba-84ad-331603e50a83",
                   "name": "Too many login attempts from this IP",
                   "originalRequest": {
                     "url": {
@@ -627,7 +627,523 @@
               }
             },
             {
-              "id": "11aeb9b6-396d-48d5-b968-37640085a2dc",
+              "id": "c2134419-fe0d-4882-bfb1-6ac081141959",
+              "name": "Refresh access token",
+              "request": {
+                "name": "Refresh access token",
+                "description": {
+                  "content": "Exchange a valid `refreshToken` for a new access `token` and rotated `refreshToken`.\nThe previous refresh token is invalidated (single-use rotation).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "refresh"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "2e602c5b-effd-44f6-a0cd-857041cfab61",
+                  "name": "New tokens issued",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Token refreshed successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "185cdfd1-bdf3-4165-9974-68494354879a",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "238c338e-8847-41df-ae3c-04a41343a743",
+                  "name": "Invalid or expired refresh token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Invalid or expired refresh token\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "d2f1d2db-4225-48a0-aad4-eb547c672305",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "d61eeee0-8822-4711-b592-048946b6772e",
+                  "name": "Too many refresh attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many refresh attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "6117f2be-a93f-4425-81d6-468f442af9b2",
+              "name": "Log out (revoke refresh token)",
+              "request": {
+                "name": "Log out (revoke refresh token)",
+                "description": {
+                  "content": "Invalidates the provided `refreshToken` server-side.\nAccess tokens remain valid until they expire (keep them short-lived).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "logout"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "7c1d2798-788b-4d7e-9e03-60d28507f84e",
+                  "name": "Refresh token revoked",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a password reset link has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "f63ff81f-7368-47ac-9213-e8d8cf241236",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "8e9ca0f1-d9fe-4d3d-b721-057ed45ec9b7",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "7fc9764b-118f-4f03-908e-ad604062d232",
+                  "name": "Too many logout attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many logout attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "3a95b1f1-6f5c-45d6-94c4-a52461e7e586",
               "name": "Request a password reset link",
               "request": {
                 "name": "Request a password reset link",
@@ -672,7 +1188,7 @@
               },
               "response": [
                 {
-                  "id": "47b81248-6a5c-4e5b-a1e2-f6c13bc5b8ac",
+                  "id": "86135921-419f-484a-b79f-7174b60d05d5",
                   "name": "Generic success (sent if email is registered)",
                   "originalRequest": {
                     "url": {
@@ -718,7 +1234,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "b891ad3d-9788-48cf-9ee5-de9a19e07071",
+                  "id": "257acf7a-2218-4ffb-a704-1e065868955d",
                   "name": "Validation failed",
                   "originalRequest": {
                     "url": {
@@ -764,7 +1280,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "9cf1f2e3-e88c-474d-9216-ebf53d12fc88",
+                  "id": "4e8f488e-18da-46d9-be3f-47627e9136af",
                   "name": "JSON body exceeds JSON_BODY_LIMIT",
                   "originalRequest": {
                     "url": {
@@ -810,7 +1326,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "96782552-eff0-4327-86e9-fcf4aeb6b1d3",
+                  "id": "7371f607-79af-492d-b5d1-018d4173e292",
                   "name": "Too many password reset requests from this IP",
                   "originalRequest": {
                     "url": {
@@ -862,7 +1378,7 @@
               }
             },
             {
-              "id": "c963cfb0-6013-441f-8652-d7632e8aacac",
+              "id": "3af71f36-b54c-49b4-8552-b0f6bb80f3ec",
               "name": "Set a new password with a reset token",
               "request": {
                 "name": "Set a new password with a reset token",
@@ -907,7 +1423,7 @@
               },
               "response": [
                 {
-                  "id": "2b15c983-c5df-434a-9213-e301793cf9cd",
+                  "id": "1c1514b4-d42d-4d6a-8cb2-7bc58b931d8a",
                   "name": "Password updated",
                   "originalRequest": {
                     "url": {
@@ -953,7 +1469,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "c39fb338-60a6-458b-b126-3bca93b5fa64",
+                  "id": "6051cac2-adc3-46b4-9b12-4eb06b2520a0",
                   "name": "Validation failed or invalid/expired token",
                   "originalRequest": {
                     "url": {
@@ -999,7 +1515,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "db6de91d-7a47-43b0-82b4-b72e51cea468",
+                  "id": "128ddc8d-fa6d-4238-9d61-5c1d6e37664c",
                   "name": "JSON body exceeds JSON_BODY_LIMIT",
                   "originalRequest": {
                     "url": {
@@ -1045,7 +1561,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "7fa2db87-232f-487c-9c15-2b3d94848bf2",
+                  "id": "18351fa5-8fa7-4854-815a-831ec0e19d58",
                   "name": "Too many reset attempts from this IP",
                   "originalRequest": {
                     "url": {
@@ -1100,11 +1616,11 @@
           "event": []
         },
         {
-          "id": "0179b40a-22fe-4057-ab6f-34d3b4429b84",
+          "id": "d91c3c46-0667-4896-b50a-623afdcdbf52",
           "name": "uploads",
           "item": [
             {
-              "id": "2f4c85d0-528e-429a-8c6a-62c8b899a414",
+              "id": "4fc65a07-9415-4bd0-afde-7c81636241e1",
               "name": "Upload one or more files",
               "request": {
                 "name": "Upload one or more files",
@@ -1158,7 +1674,7 @@
               },
               "response": [
                 {
-                  "id": "eec23054-7f45-423a-943f-1a1d64a19963",
+                  "id": "14d2ff64-aa68-40b6-b9d9-ed74041f1058",
                   "name": "Files uploaded",
                   "originalRequest": {
                     "url": {
@@ -1216,7 +1732,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "3385c651-33bf-424c-860b-41453d0a7cb3",
+                  "id": "c7c79667-698a-4d41-beca-8836a7f9f1df",
                   "name": "No files, invalid type, or too many files",
                   "originalRequest": {
                     "url": {
@@ -1274,7 +1790,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "f13bbbda-084a-4fb6-9187-03a786ef5f20",
+                  "id": "a7b43178-5cc4-42a9-93f8-33c9d9588481",
                   "name": "Missing, invalid, or expired token",
                   "originalRequest": {
                     "url": {
@@ -1332,7 +1848,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "4be1d57b-9f11-4b55-bcb4-6900cc9fd33c",
+                  "id": "b9b0168f-e6e5-4dda-ae6b-6efe395dcf09",
                   "name": "File exceeds UPLOAD_MAX_FILE_SIZE",
                   "originalRequest": {
                     "url": {
@@ -1390,7 +1906,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "309212fc-1332-4dc9-8559-8b7d0604ac18",
+                  "id": "d5b4537a-c825-4b01-9a81-3aa32ecceec6",
                   "name": "Upload rate limit exceeded",
                   "originalRequest": {
                     "url": {
@@ -1454,7 +1970,7 @@
               }
             },
             {
-              "id": "ff915ce7-9bc3-40c2-b8ff-3cba0f7e9c13",
+              "id": "3c51140f-c668-44d4-a78a-55fb89f833c4",
               "name": "Archive an uploaded file (soft delete)",
               "request": {
                 "name": "Archive an uploaded file (soft delete)",
@@ -1502,7 +2018,7 @@
               },
               "response": [
                 {
-                  "id": "5e755d4b-a788-4e2c-8334-5002e6d0a6cc",
+                  "id": "23adab7d-d8e5-4635-8da9-365013e51016",
                   "name": "File archived",
                   "originalRequest": {
                     "url": {
@@ -1556,7 +2072,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "687942fc-a624-43fb-acc6-266f4ac91762",
+                  "id": "93d5de65-37b0-4403-ae56-45714a0f685e",
                   "name": "Invalid file name or file already archived in storage",
                   "originalRequest": {
                     "url": {
@@ -1610,7 +2126,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "2dd66d14-bbde-4c80-89e3-bdb3e35162b9",
+                  "id": "0acf3ec4-b264-4498-a013-f8417896a6a5",
                   "name": "Missing, invalid, or expired token",
                   "originalRequest": {
                     "url": {
@@ -1664,7 +2180,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "205306f8-4395-492e-8333-07ab8b5067e6",
+                  "id": "77b93b48-4315-4c0a-866c-de3f739b4093",
                   "name": "File not found or not owned by the current user",
                   "originalRequest": {
                     "url": {
@@ -1718,7 +2234,7 @@
                   "_postman_previewlanguage": "json"
                 },
                 {
-                  "id": "bb73ac51-afe6-420d-83f5-1ac599c1eec6",
+                  "id": "31a668a9-73c0-4f24-ba81-5f70e91c8000",
                   "name": "Upload rate limit exceeded",
                   "originalRequest": {
                     "url": {
@@ -1781,7 +2297,7 @@
           "event": []
         },
         {
-          "id": "9bdb2be8-3722-4705-a41f-93d6e729f60a",
+          "id": "f45673d4-ed87-41ed-85ab-8fe90a19f8d8",
           "name": "Get logged-in user profile",
           "request": {
             "name": "Get logged-in user profile",
@@ -1818,7 +2334,7 @@
           },
           "response": [
             {
-              "id": "3cf63001-5b54-44b6-99f2-e80e3aa1b13b",
+              "id": "aabc7bed-8f05-4b65-91e9-e4c87930fcad",
               "name": "Current user profile",
               "originalRequest": {
                 "url": {
@@ -1859,12 +2375,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"1980-05-12T17:24:22.289Z\",\n    \"updatedAt\": \"1976-04-27T02:25:11.383Z\"\n  },\n  \"message\": \"User registered successfully\"\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"2008-12-25T13:00:35.052Z\",\n    \"updatedAt\": \"1964-04-06T07:58:32.723Z\"\n  },\n  \"message\": \"User registered successfully\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8e6a940a-7dec-4004-b992-5b6c6a6c3ce9",
+              "id": "8691234f-a23f-4a20-8888-4dad3490ff2e",
               "name": "Missing, invalid, or expired token",
               "originalRequest": {
                 "url": {
@@ -1910,7 +2426,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "05bbeecb-286d-411d-bcd0-026eb1f4e4f6",
+              "id": "a0e134c3-123d-4195-be13-a52958eea3b4",
               "name": "User not found",
               "originalRequest": {
                 "url": {
@@ -1974,7 +2490,7 @@
     }
   ],
   "info": {
-    "_postman_id": "62b6c196-7b81-4f1e-872e-4591ec9dc94a",
+    "_postman_id": "56bd2113-3ba4-4a47-a484-d12a931b1696",
     "name": "Feed App API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

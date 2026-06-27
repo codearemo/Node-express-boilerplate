@@ -83,7 +83,9 @@
  *     summary: Log in with email or username
  *     description: |
  *       Send a single `identifier` (email or username) and `password`.
- *       Returns a JWT in `token` — use it as `Authorization: Bearer <token>` on protected routes.
+ *       Returns a short-lived access JWT in `token` and a long-lived `refreshToken`.
+ *       Use `token` as `Authorization: Bearer <token>` on protected routes.
+ *       When `token` expires, call `POST /auth/refresh` with `refreshToken`.
  *     requestBody:
  *       required: true
  *       content:
@@ -105,12 +107,114 @@
  *               oneOf:
  *                 - $ref: '#/components/schemas/ApiValidationErrorResponse'
  *                 - $ref: '#/components/schemas/ApiInvalidCredentialsError'
+ *       403:
+ *         description: Account is inactive
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiInactiveAccountError'
  *       429:
  *         description: Too many login attempts from this IP
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiRateLimitLoginError'
+ *       413:
+ *         description: JSON body exceeds JSON_BODY_LIMIT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiJsonBodyTooLargeError'
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/refresh:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Refresh access token
+ *     description: |
+ *       Exchange a valid `refreshToken` for a new access `token` and rotated `refreshToken`.
+ *       The previous refresh token is invalidated (single-use rotation).
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RefreshTokenRequest'
+ *     responses:
+ *       200:
+ *         description: New tokens issued
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponseRefreshTokens'
+ *       400:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiValidationErrorResponse'
+ *       401:
+ *         description: Invalid or expired refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiInvalidRefreshTokenError'
+ *       403:
+ *         description: Account is inactive
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiInactiveAccountError'
+ *       429:
+ *         description: Too many refresh attempts from this IP
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiRateLimitRefreshError'
+ *       413:
+ *         description: JSON body exceeds JSON_BODY_LIMIT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiJsonBodyTooLargeError'
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Log out (revoke refresh token)
+ *     description: |
+ *       Invalidates the provided `refreshToken` server-side.
+ *       Access tokens remain valid until they expire (keep them short-lived).
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RefreshTokenRequest'
+ *     responses:
+ *       200:
+ *         description: Refresh token revoked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponseMessage'
+ *       400:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiValidationErrorResponse'
+ *       429:
+ *         description: Too many logout attempts from this IP
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiRateLimitLogoutError'
  *       413:
  *         description: JSON body exceeds JSON_BODY_LIMIT
  *         content:

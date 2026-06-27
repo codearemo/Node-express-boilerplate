@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 
 /**
- * Build a signed JWT for an authenticated user.
+ * Build a signed access JWT for an authenticated user.
  *
  * Payload keeps only `sub` (subject) = the user's MongoDB _id.
  * Do not put email, password, or other PII in the token.
@@ -14,7 +14,7 @@ const config = require('../../config');
  * @param {object} user - User record from the repository (must have `_id`)
  * @returns {string} Signed JWT string for the Authorization header
  */
-function signToken(user) {
+function signAccessToken(user) {
   if (!config.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured');
   }
@@ -46,6 +46,7 @@ function verifyToken(token) {
 }
 
 module.exports = {
-  signToken,
+  signAccessToken,
+  signToken: signAccessToken,
   verifyToken,
 };

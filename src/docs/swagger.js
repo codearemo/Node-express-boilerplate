@@ -139,14 +139,45 @@ const options = {
             },
           },
         },
+        RefreshTokenRequest: {
+          type: 'object',
+          required: ['refreshToken'],
+          properties: {
+            refreshToken: {
+              type: 'string',
+              description: 'Refresh token from login or a prior refresh response',
+              example: 'a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12',
+            },
+          },
+        },
+        AuthTokens: {
+          type: 'object',
+          properties: {
+            token: {
+              type: 'string',
+              description: 'Short-lived access JWT — `Authorization: Bearer <token>`',
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            refreshToken: {
+              type: 'string',
+              description: 'Long-lived refresh token — store securely, send to POST /auth/refresh',
+              example: 'a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12',
+            },
+          },
+        },
         LoginResponse: {
           type: 'object',
           properties: {
             user: { $ref: '#/components/schemas/User' },
             token: {
               type: 'string',
-              description: 'JWT — send as `Authorization: Bearer <token>`',
+              description: 'Short-lived access JWT — send as `Authorization: Bearer <token>`',
               example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            refreshToken: {
+              type: 'string',
+              description: 'Long-lived refresh token for POST /auth/refresh',
+              example: 'a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12',
             },
           },
         },
@@ -177,6 +208,13 @@ const options = {
           properties: {
             data: { $ref: '#/components/schemas/LoginResponse' },
             message: { type: 'string', example: 'Login successful' },
+          },
+        },
+        SuccessResponseRefreshTokens: {
+          type: 'object',
+          properties: {
+            data: { $ref: '#/components/schemas/AuthTokens' },
+            message: { type: 'string', example: 'Token refreshed successfully' },
           },
         },
         SuccessResponseMessage: {
@@ -320,11 +358,25 @@ const options = {
             message: 'Invalid credentials',
           },
         },
+        ApiInactiveAccountError: {
+          allOf: [{ $ref: '#/components/schemas/ApiErrorMessageResponse' }],
+          example: {
+            data: null,
+            message: 'Account is inactive',
+          },
+        },
         ApiInvalidResetTokenError: {
           allOf: [{ $ref: '#/components/schemas/ApiErrorMessageResponse' }],
           example: {
             data: null,
             message: 'Invalid or expired reset token',
+          },
+        },
+        ApiInvalidRefreshTokenError: {
+          allOf: [{ $ref: '#/components/schemas/ApiErrorMessageResponse' }],
+          example: {
+            data: null,
+            message: 'Invalid or expired refresh token',
           },
         },
         ApiConflictError: {
@@ -395,6 +447,20 @@ const options = {
           example: {
             data: null,
             message: 'Too many reset attempts, please try again later',
+          },
+        },
+        ApiRateLimitRefreshError: {
+          allOf: [{ $ref: '#/components/schemas/ApiErrorMessageResponse' }],
+          example: {
+            data: null,
+            message: 'Too many refresh attempts, please try again later',
+          },
+        },
+        ApiRateLimitLogoutError: {
+          allOf: [{ $ref: '#/components/schemas/ApiErrorMessageResponse' }],
+          example: {
+            data: null,
+            message: 'Too many logout attempts, please try again later',
           },
         },
         ApiRateLimitUploadError: {

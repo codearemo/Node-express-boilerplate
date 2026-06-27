@@ -3,15 +3,18 @@
 // ******************************************************
 
 const usersRepository = require('../users/repositories');
+const { refreshTokens: refreshTokensRepository } = require('./repositories');
 const { toPublicUser } = require('../users/users.utils');
 const {
   validateRegister,
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
+  validateRefreshToken,
   isEmail,
 } = require('./auth.validation');
-const { signToken } = require('./auth.token');
+const { signAccessToken } = require('./auth.token');
+const { assertUserIsActive } = require('./auth.utils');
 const {
   generatePasswordResetToken,
   buildResetUrl,
@@ -24,6 +27,20 @@ const bcrypt = require('bcrypt');
 
 const FORGOT_PASSWORD_MESSAGE =
   'If that email is registered, a password reset link has been sent.';
+
+async function issueAuthTokens(user) {
+  const refreshToken = await refreshTokensRepository.createForUser(user._id);
+
+  try {
+    return {
+      token: signAccessToken(user),
+      refreshToken,
+    };
+  } catch (error) {
+    await refreshTokensRepository.revokeByRawToken(refreshToken);
+    throw error;
+  }
+}
 
 async function register(body) {
   const payload = validateRegister(body);
@@ -79,12 +96,44 @@ async function login(body) {
     throw error;
   }
 
-  const publicUser = toPublicUser(user);
+  assertUserIsActive(user);
+
+  const tokens = await issueAuthTokens(user);
 
   return {
-    user: publicUser,
-    token: signToken(user),
+    user: toPublicUser(user),
+    ...tokens,
   };
+}
+
+async function refresh(body) {
+  const { refreshToken } = validateRefreshToken(body);
+  const storedToken = await refreshTokensRepository.consumeValidByRawToken(
+    refreshToken,
+  );
+
+  if (!storedToken) {
+    const error = new Error('Invalid or expired refresh token');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const user = await usersRepository.findById(storedToken.userId);
+
+  if (!user) {
+    const error = new Error('Invalid or expired refresh token');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  assertUserIsActive(user);
+
+  return issueAuthTokens(user);
+}
+
+async function logout(body) {
+  const { refreshToken } = validateRefreshToken(body);
+  await refreshTokensRepository.revokeByRawToken(refreshToken);
 }
 
 async function forgotPassword(body) {
@@ -135,11 +184,15 @@ async function resetPassword(body) {
     user._id,
     await bcrypt.hash(password, 10),
   );
+
+  await refreshTokensRepository.revokeAllForUser(user._id);
 }
 
 module.exports = {
   register,
   login,
+  refresh,
+  logout,
   forgotPassword,
   resetPassword,
 };

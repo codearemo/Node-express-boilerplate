@@ -33,6 +33,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  refresh,
+  logout,
   upload,
 } = config.rateLimit;
 
@@ -66,6 +68,18 @@ const resetPasswordLimiter = createRateLimiter({
   message: 'Too many reset attempts, please try again later',
 });
 
+const refreshLimiter = createRateLimiter({
+  limit: refresh.max,
+  windowMs: refresh.windowMs,
+  message: 'Too many refresh attempts, please try again later',
+});
+
+const logoutLimiter = createRateLimiter({
+  limit: logout.max,
+  windowMs: logout.windowMs,
+  message: 'Too many logout attempts, please try again later',
+});
+
 const uploadLimiter = createRateLimiter({
   limit: upload.max,
   windowMs: upload.windowMs,
@@ -79,5 +93,7 @@ module.exports = {
   loginLimiter,
   forgotPasswordLimiter,
   resetPasswordLimiter,
+  refreshLimiter,
+  logoutLimiter,
   uploadLimiter,
 };

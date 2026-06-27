@@ -7,7 +7,7 @@ REST API for a social feed application. Built with Express and a layered archite
 ## Features
 
 - **Versioned API** — all routes under `/api/v1`
-- **Auth** — register, login (email or username via single `identifier` field), forgot/reset password, JWT bearer tokens
+- **Auth** — register, login (email or username via single `identifier` field), forgot/reset password, JWT access + refresh tokens
 - **Users** — protected profile endpoint (`GET /users/me`)
 - **Uploads** — multipart upload (`POST /uploads`) with switchable storage: `local`, `s3`, or `cloudinary`
 - **Validation** — Zod schemas with field-level error `details`
@@ -106,9 +106,10 @@ Or create a `.env` file manually:
 ```env
 PORT=3003
 
-# JWT
+# JWT — access token (short-lived) + refresh token (long-lived, stored hashed in DB)
 JWT_SECRET=your-long-random-secret
-JWT_EXPIRES_IN=7d
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
 
 # CORS — comma-separated list of allowed browser origins
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
@@ -156,7 +157,8 @@ RATE_LIMIT_RESET_PASSWORD_WINDOW_MS=300000
 |----------|----------|-------------|
 | `PORT` | No | Server port (default: `3000`) |
 | `JWT_SECRET` | Yes | Secret for signing JWTs |
-| `JWT_EXPIRES_IN` | No | Token expiry (default: `7d`) |
+| `JWT_EXPIRES_IN` | No | Access token expiry (default: `15m`) |
+| `JWT_REFRESH_EXPIRES_IN` | No | Refresh token expiry (default: `7d`) |
 | `ALLOWED_ORIGINS` | No | Comma-separated frontend URLs for CORS — required before a browser app can call the API cross-origin |
 | `JSON_BODY_LIMIT` | No | Max JSON body size (default: `10kb`) |
 | `DB_DRIVER` | No | `mongo` or `sql` (default: `mongo`) |
@@ -228,7 +230,9 @@ Interactive docs: [http://localhost:3003/api-docs](http://localhost:3003/api-doc
 |--------|------|------|-------------|
 | `GET` | `/health` | No | Health check (includes MongoDB ping; **503** if DB unavailable) |
 | `POST` | `/api/v1/auth/register` | No | Create a new user |
-| `POST` | `/api/v1/auth/login` | No | Login, returns JWT |
+| `POST` | `/api/v1/auth/login` | No | Login — returns access `token` + `refreshToken` |
+| `POST` | `/api/v1/auth/refresh` | No | Exchange `refreshToken` for a new token pair |
+| `POST` | `/api/v1/auth/logout` | No | Revoke a `refreshToken` |
 | `POST` | `/api/v1/auth/forgot-password` | No | Email a password reset link |
 | `POST` | `/api/v1/auth/reset-password` | No | Set new password with reset token |
 | `POST` | `/api/v1/uploads` | Bearer JWT | Upload one or more files (`multipart/form-data`, field `files`) |
@@ -266,10 +270,45 @@ Content-Type: application/json
 }
 ```
 
-Response includes a JWT in `data.token`. Send it on protected routes:
+Response includes a short-lived access JWT in `data.token` and a long-lived `data.refreshToken`:
+
+```json
+{
+  "message": "Login successful",
+  "data": {
+    "user": { },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "a1b2c3d4e5f678901234567890abcd..."
+  }
+}
+```
+
+Send the access token on protected routes:
 
 ```http
 Authorization: Bearer <token>
+```
+
+When the access token expires, exchange the refresh token:
+
+```http
+POST /api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "<refreshToken from login>"
+}
+```
+
+To sign out, revoke the refresh token:
+
+```http
+POST /api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "<refreshToken>"
+}
 ```
 
 ### Forgot password
@@ -439,13 +478,14 @@ All `/api/v1` responses use a uniform envelope.
 ## Authentication
 
 ```
-1. POST /auth/login     →  { data: { user, token } }
-2. Store data.token     →  localStorage / memory
+1. POST /auth/login     →  { data: { user, token, refreshToken } }
+2. Store tokens         →  access token in memory; refresh token in httpOnly cookie or secure storage
 3. Protected requests   →  Authorization: Bearer <token>
-4. authenticate MW     →  sets req.user.id from JWT payload
+4. POST /auth/refresh   →  new token pair when access token expires (refresh token rotates)
+5. authenticate MW      →  sets req.user.id from JWT payload
 ```
 
-JWT payload contains only `{ sub: userId }` — no email or password in the token.
+Access JWT payload contains only `{ sub: userId }` — no email or password in the token. Refresh tokens are opaque random strings stored **hashed** in MongoDB.
 
 ### Rate limiting
 
@@ -458,6 +498,8 @@ Every request passes a **global** per-IP limit first. Auth routes also have **st
 | `POST /auth/login` | 10 requests | 5 minutes |
 | `POST /auth/forgot-password` | 5 requests | 5 minutes |
 | `POST /auth/reset-password` | 10 requests | 5 minutes |
+| `POST /auth/refresh` | 20 requests | 5 minutes |
+| `POST /auth/logout` | 20 requests | 5 minutes |
 
 When exceeded, the API returns **429** with `{ data: null, message: "Too many …" }`. Tune via `RATE_LIMIT_*` env vars. Limits are disabled when `NODE_ENV=test`.
 

@@ -26,6 +26,29 @@ async function login(req, res, next) {
   }
 }
 
+async function refresh(req, res, next) {
+  try {
+    const tokens = await authService.refresh(req.body);
+    sendSuccess(res, {
+      message: 'Token refreshed successfully',
+      data: tokens,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function logout(req, res, next) {
+  try {
+    await authService.logout(req.body);
+    sendSuccess(res, {
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function forgotPassword(req, res, next) {
   try {
     const result = await authService.forgotPassword(req.body);
@@ -51,6 +74,8 @@ async function resetPassword(req, res, next) {
 module.exports = {
   register,
   login,
+  refresh,
+  logout,
   forgotPassword,
   resetPassword,
 };
