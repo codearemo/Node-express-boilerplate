@@ -12,6 +12,7 @@ REST API for a social feed application. Built with Express and a layered archite
 - **Validation** — Zod schemas with field-level error `details`
 - **Uniform responses** — consistent `{ data, message, details?, pagination? }` envelope
 - **Password security** — bcrypt hashing, passwords never returned in API responses
+- **Rate limiting** — global per-IP baseline on all routes, plus stricter limits on auth endpoints
 - **API docs** — Swagger UI at `/api-docs`, OpenAPI JSON at `/api-docs.json`
 - **Postman** — collection generated from OpenAPI via `npm run postman:build`
 - **Linting & formatting** — ESLint + Prettier
@@ -44,7 +45,7 @@ feed-app-server/
 │   ├── config/                 # Environment-based configuration
 │   ├── database/               # DB connection lifecycle (mongo | sql)
 │   ├── docs/                   # OpenAPI spec (paths.js + swagger.js)
-│   ├── middleware/             # authenticate, error handler
+│   ├── middleware/             # authenticate, error handler, rate limit
 │   ├── modules/
 │   │   ├── auth/               # Register, login, JWT signing
 │   │   └── users/              # User model, repository, profile
@@ -123,6 +124,18 @@ SMTP_USER=your-smtp-user
 SMTP_PASS=your-smtp-password
 SMTP_FROM="Feed App <noreply@example.com>"
 PASSWORD_RESET_EXPIRES_MINUTES=60
+
+# Auth rate limits (per IP)
+RATE_LIMIT_GLOBAL_MAX=200
+RATE_LIMIT_GLOBAL_WINDOW_MS=900000
+RATE_LIMIT_REGISTER_MAX=10
+RATE_LIMIT_REGISTER_WINDOW_MS=300000
+RATE_LIMIT_LOGIN_MAX=10
+RATE_LIMIT_LOGIN_WINDOW_MS=300000
+RATE_LIMIT_FORGOT_PASSWORD_MAX=5
+RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS=300000
+RATE_LIMIT_RESET_PASSWORD_MAX=10
+RATE_LIMIT_RESET_PASSWORD_WINDOW_MS=300000
 ```
 
 | Variable | Required | Description |
@@ -140,6 +153,16 @@ PASSWORD_RESET_EXPIRES_MINUTES=60
 | `SMTP_PASS` | Yes*** | SMTP password |
 | `SMTP_FROM` | No | From address (defaults to `SMTP_USER`) |
 | `PASSWORD_RESET_EXPIRES_MINUTES` | No | Reset token TTL (default: `60`) |
+| `RATE_LIMIT_GLOBAL_MAX` | No | Max requests per IP across all routes (default: `200`) |
+| `RATE_LIMIT_GLOBAL_WINDOW_MS` | No | Global window in ms (default: `900000` = 15 min) |
+| `RATE_LIMIT_REGISTER_MAX` | No | Max register requests per IP per window (default: `10`) |
+| `RATE_LIMIT_REGISTER_WINDOW_MS` | No | Register window in ms (default: `300000` = 5 min) |
+| `RATE_LIMIT_LOGIN_MAX` | No | Max login requests per IP per window (default: `10`) |
+| `RATE_LIMIT_LOGIN_WINDOW_MS` | No | Login window in ms (default: `300000` = 5 min) |
+| `RATE_LIMIT_FORGOT_PASSWORD_MAX` | No | Max forgot-password requests per IP (default: `5`) |
+| `RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS` | No | Forgot-password window in ms (default: `300000` = 5 min) |
+| `RATE_LIMIT_RESET_PASSWORD_MAX` | No | Max reset-password requests per IP (default: `10`) |
+| `RATE_LIMIT_RESET_PASSWORD_WINDOW_MS` | No | Reset-password window in ms (default: `300000` = 5 min) |
 
 \* Required when `DB_DRIVER=mongo`  
 \** Required when `DB_DRIVER=sql`  
@@ -178,6 +201,8 @@ Interactive docs: [http://localhost:3003/api-docs](http://localhost:3003/api-doc
 
 ### Register
 
+Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.
+
 ```http
 POST /api/v1/auth/register
 Content-Type: application/json
@@ -187,7 +212,7 @@ Content-Type: application/json
   "lastName": "Doe",
   "username": "jane",
   "email": "jane@example.com",
-  "password": "password123"
+  "password": "Password123!"
 }
 ```
 
@@ -201,7 +226,7 @@ Content-Type: application/json
 
 {
   "identifier": "jane",
-  "password": "password123"
+  "password": "Password123!"
 }
 ```
 
@@ -225,7 +250,7 @@ Content-Type: application/json
 }
 ```
 
-Always returns the same success message — even if the email is not registered.
+Always returns the same success message — even if the email is not registered or email delivery fails.
 
 In non-production environments, the reset link is also logged to the console.
 
@@ -239,7 +264,7 @@ Content-Type: application/json
 
 {
   "token": "<token-from-email-link>",
-  "password": "newpassword123"
+  "password": "Newpassword123!"
 }
 ```
 
@@ -321,6 +346,20 @@ All `/api/v1` responses use a uniform envelope.
 
 JWT payload contains only `{ sub: userId }` — no email or password in the token.
 
+### Rate limiting
+
+Every request passes a **global** per-IP limit first. Auth routes also have **stricter** per-endpoint limits.
+
+| Layer | Default limit | Window |
+|-------|---------------|--------|
+| **Global** (all routes) | 200 requests | 15 minutes |
+| `POST /auth/register` | 10 requests | 5 minutes |
+| `POST /auth/login` | 10 requests | 5 minutes |
+| `POST /auth/forgot-password` | 5 requests | 5 minutes |
+| `POST /auth/reset-password` | 10 requests | 5 minutes |
+
+When exceeded, the API returns **429** with `{ data: null, message: "Too many …" }`. Tune via `RATE_LIMIT_*` env vars. Limits are disabled when `NODE_ENV=test`.
+
 ---
 
 ## API Documentation
@@ -380,7 +419,7 @@ npm test           # run once
 npm run test:watch # re-run on file changes
 ```
 
-Tests live in `tests/` and cover register, login, validation errors, protected `/users/me`, and password reset.
+Tests live in `tests/` and cover register (conflicts, password rules), login (username and email), JWT auth errors, protected `/users/me`, password reset (including token reuse), mongo error mapping, and rate limiting.
 
 ---
 

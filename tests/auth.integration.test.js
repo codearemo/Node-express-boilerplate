@@ -1,4 +1,5 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 const app = require('../src/app');
 const { validRegisterPayload, VALID_PASSWORD } = require('./helpers');
 
@@ -40,6 +41,41 @@ describe('Auth API', () => {
         data: null,
         message: 'Email already in use',
       });
+    });
+
+    it('returns 409 when username is already in use', async () => {
+      await request(app)
+        .post(`${API}/auth/register`)
+        .send(validRegisterPayload());
+
+      const response = await request(app)
+        .post(`${API}/auth/register`)
+        .send(
+          validRegisterPayload({
+            email: 'other@example.com',
+          }),
+        );
+
+      expect(response.status).toBe(409);
+      expect(response.body).toMatchObject({
+        data: null,
+        message: 'Username already in use',
+      });
+    });
+
+    it('returns 400 when the password does not meet complexity rules', async () => {
+      const response = await request(app)
+        .post(`${API}/auth/register`)
+        .send(validRegisterPayload({ password: 'password123' }));
+
+      expect(response.status).toBe(400);
+      expect(response.body.data).toBeNull();
+      expect(response.body.message).toMatch(/uppercase/i);
+      expect(response.body.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ field: 'password' }),
+        ]),
+      );
     });
 
     it('returns 400 with field details when validation fails', async () => {
@@ -88,6 +124,16 @@ describe('Auth API', () => {
       expect(response.body.data.user.password).toBeUndefined();
     });
 
+    it('returns user and token on successful login with email', async () => {
+      const response = await request(app)
+        .post(`${API}/auth/login`)
+        .send({ identifier: 'jane@example.com', password: VALID_PASSWORD });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.user.email).toBe('jane@example.com');
+      expect(response.body.data.token).toEqual(expect.any(String));
+    });
+
     it('returns 400 for invalid credentials', async () => {
       const response = await request(app)
         .post(`${API}/auth/login`)
@@ -110,6 +156,37 @@ describe('Auth API', () => {
         data: null,
         message: 'Authentication required',
       });
+    });
+
+    it('returns 401 for a malformed token', async () => {
+      const response = await request(app)
+        .get(`${API}/users/me`)
+        .set('Authorization', 'Bearer not-a-valid-jwt');
+
+      expect(response.status).toBe(401);
+      expect(response.body).toMatchObject({
+        data: null,
+        message: 'Invalid or expired token',
+      });
+    });
+
+    it('returns 401 for an expired token', async () => {
+      await request(app)
+        .post(`${API}/auth/register`)
+        .send(validRegisterPayload());
+
+      const expiredToken = jwt.sign(
+        { sub: '664a1b2c3d4e5f678901234' },
+        process.env.JWT_SECRET,
+        { expiresIn: '-1s' },
+      );
+
+      const response = await request(app)
+        .get(`${API}/users/me`)
+        .set('Authorization', `Bearer ${expiredToken}`);
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe('Invalid or expired token');
     });
 
     it('returns the logged-in user profile with a valid token', async () => {

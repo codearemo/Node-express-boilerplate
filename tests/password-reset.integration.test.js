@@ -77,6 +77,29 @@ describe('Password reset API', () => {
         ]),
       );
     });
+
+    it('returns 200 when SMTP fails for a registered email', async () => {
+      const mail = require('../src/utils/mail');
+      const sendSpy = vi
+        .spyOn(mail, 'sendPasswordResetEmail')
+        .mockRejectedValue(new Error('SMTP down'));
+
+      await request(app)
+        .post(`${API}/auth/register`)
+        .send(validRegisterPayload());
+
+      const response = await request(app)
+        .post(`${API}/auth/forgot-password`)
+        .send({
+          email: 'jane@example.com',
+          resetUrl: RESET_URL,
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe(FORGOT_PASSWORD_MESSAGE);
+
+      sendSpy.mockRestore();
+    });
   });
 
   describe('POST /auth/reset-password', () => {
@@ -137,6 +160,22 @@ describe('Password reset API', () => {
         { email: 'jane@example.com' },
         { $set: { passwordResetExpiresAt: new Date(Date.now() - 1000) } },
       );
+
+      const response = await request(app)
+        .post(`${API}/auth/reset-password`)
+        .send({ token, password: VALID_NEW_PASSWORD });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid or expired reset token');
+    });
+
+    it('returns 400 when the same reset token is used twice', async () => {
+      const token = getTokenFromResetLink(sentResetLinks[0]);
+
+      await request(app)
+        .post(`${API}/auth/reset-password`)
+        .send({ token, password: VALID_NEW_PASSWORD })
+        .expect(200);
 
       const response = await request(app)
         .post(`${API}/auth/reset-password`)

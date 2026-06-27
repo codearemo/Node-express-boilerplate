@@ -12,8 +12,16 @@ const config = require('./config');
 // Import the database connection
 const { connect } = require('./database');
 
+function validateEnv() {
+  if (!config.JWT_SECRET) {
+    throw new Error('JWT_SECRET is required. Set it in your .env file.');
+  }
+}
+
 // Start the server
 async function start() {
+  validateEnv();
+
   // Connect to the database
   await connect();
 

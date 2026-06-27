@@ -18,6 +18,7 @@ const {
   hashPasswordResetToken,
 } = require('../../utils/password-reset');
 const { sendPasswordResetEmail } = require('../../utils/mail');
+const { mapMongoDuplicateKeyError } = require('../../utils/mongo-errors');
 const config = require('../../config');
 const bcrypt = require('bcrypt');
 
@@ -43,10 +44,16 @@ async function register(body) {
     throw error;
   }
 
-  const user = await usersRepository.create({
-    ...payload,
-    password: await bcrypt.hash(payload.password, 10),
-  });
+  let user;
+
+  try {
+    user = await usersRepository.create({
+      ...payload,
+      password: await bcrypt.hash(payload.password, 10),
+    });
+  } catch (error) {
+    throw mapMongoDuplicateKeyError(error);
+  }
 
   return toPublicUser(user);
 }
@@ -99,7 +106,15 @@ async function forgotPassword(body) {
     );
 
     const resetLink = buildResetUrl(resetUrl, rawToken);
-    await sendPasswordResetEmail({ to: email, resetLink });
+
+    try {
+      await sendPasswordResetEmail({ to: email, resetLink });
+    } catch (error) {
+      console.error(
+        '[auth] Failed to send password reset email:',
+        error.message,
+      );
+    }
   }
 
   return { message: FORGOT_PASSWORD_MESSAGE };

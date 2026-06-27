@@ -77,7 +77,7 @@ const options = {
               format: 'email',
               example: 'jane@example.com',
             },
-            password: { type: 'string', minLength: 8, example: 'password123' },
+            password: { type: 'string', minLength: 8, example: 'Password123!' },
           },
         },
         LoginRequest: {
@@ -90,7 +90,7 @@ const options = {
               description: 'Email or username (single login field)',
               example: 'jane',
             },
-            password: { type: 'string', example: 'password123' },
+            password: { type: 'string', example: 'Password123!' },
           },
         },
         ForgotPasswordRequest: {
@@ -123,7 +123,7 @@ const options = {
             password: {
               type: 'string',
               minLength: 8,
-              example: 'newpassword123',
+              example: 'Newpassword123!',
             },
           },
         },

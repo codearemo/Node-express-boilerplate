@@ -108,7 +108,7 @@
           "password": {
             "type": "string",
             "minLength": 8,
-            "example": "password123"
+            "example": "Password123!"
           }
         }
       },
@@ -127,7 +127,7 @@
           },
           "password": {
             "type": "string",
-            "example": "password123"
+            "example": "Password123!"
           }
         }
       },
@@ -166,7 +166,7 @@
           "password": {
             "type": "string",
             "minLength": 8,
-            "example": "newpassword123"
+            "example": "Newpassword123!"
           }
         }
       },
@@ -351,6 +351,16 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too many registration attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -385,6 +395,16 @@
           },
           "400": {
             "description": "Validation failed or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many login attempts from this IP",
             "content": {
               "application/json": {
                 "schema": {
@@ -433,6 +453,16 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too many password reset requests from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -467,6 +497,16 @@
           },
           "400": {
             "description": "Validation failed or invalid/expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many reset attempts from this IP",
             "content": {
               "application/json": {
                 "schema": {

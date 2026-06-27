@@ -22,7 +22,7 @@ module.exports = [
     },
   },
   {
-    files: ['src/server.js', 'src/database/**/*.js', 'src/utils/mail.js'],
+    files: ['src/server.js', 'src/database/**/*.js', 'src/utils/mail.js', 'src/modules/auth/auth.service.js'],
     rules: {
       'no-console': 'off',
       'n/no-process-exit': 'off',
@@ -48,6 +48,7 @@ module.exports = [
         describe: 'readonly',
         it: 'readonly',
         expect: 'readonly',
+        vi: 'readonly',
       },
     },
     rules: {

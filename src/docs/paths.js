@@ -53,6 +53,12 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
+ *       429:
+ *         description: Too many registration attempts from this IP
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
  */
 
 /**
@@ -79,6 +85,12 @@
  *               $ref: '#/components/schemas/SuccessResponseLogin'
  *       400:
  *         description: Validation failed or invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
+ *       429:
+ *         description: Too many login attempts from this IP
  *         content:
  *           application/json:
  *             schema:
@@ -114,6 +126,12 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
+ *       429:
+ *         description: Too many password reset requests from this IP
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
  */
 
 /**
@@ -140,6 +158,12 @@
  *               $ref: '#/components/schemas/SuccessResponseMessage'
  *       400:
  *         description: Validation failed or invalid/expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
+ *       429:
+ *         description: Too many reset attempts from this IP
  *         content:
  *           application/json:
  *             schema:

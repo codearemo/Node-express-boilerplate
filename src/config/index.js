@@ -19,6 +19,39 @@ const config = {
   get passwordResetExpiresMinutes() {
     return Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES) || 60;
   },
+  get rateLimit() {
+    const authWindowMs = 5 * 60 * 1000;
+
+    return {
+      global: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_GLOBAL_WINDOW_MS) || 15 * 60 * 1000,
+        max: Number(process.env.RATE_LIMIT_GLOBAL_MAX) || 200,
+      },
+      register: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_REGISTER_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_REGISTER_MAX) || 10,
+      },
+      login: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_LOGIN_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_LOGIN_MAX) || 10,
+      },
+      forgotPassword: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_FORGOT_PASSWORD_WINDOW_MS) ||
+          authWindowMs,
+        max: Number(process.env.RATE_LIMIT_FORGOT_PASSWORD_MAX) || 5,
+      },
+      resetPassword: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_RESET_PASSWORD_WINDOW_MS) ||
+          authWindowMs,
+        max: Number(process.env.RATE_LIMIT_RESET_PASSWORD_MAX) || 10,
+      },
+    };
+  },
   get mail() {
     const user = process.env.SMTP_USER;
     const from =

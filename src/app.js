@@ -11,11 +11,15 @@ const app = express();
 // Import versioned API routes
 const v1Routes = require('./api/v1');
 const errorHandler = require('./middleware/error.middleware');
+const { globalLimiter } = require('./middleware/rate-limit.middleware');
 const swaggerUi = require('swagger-ui-express');
 const { getSwaggerSpec } = require('./docs/swagger');
 
 // Middleware to parse JSON bodies into req.body
 app.use(express.json());
+
+// Baseline per-IP rate limit for every route (auth routes also have stricter limits)
+app.use(globalLimiter);
 
 // Swagger UI — rebuilds spec on each request so paths.js edits show after refresh
 app.use('/api-docs', swaggerUi.serve, (req, res, next) => {
