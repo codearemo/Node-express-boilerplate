@@ -5,6 +5,7 @@ const {
 } = require('../../src/utils/social-auth');
 const {
   validRegisterPayload,
+  verifyRegisteredUser,
   VALID_PASSWORD,
 } = require('../helpers');
 
@@ -66,7 +67,7 @@ describe('Social login API', () => {
       expect(response.body.data.token).toEqual(expect.any(String));
     });
 
-    it('links a social provider to an existing password account with the same email', async () => {
+    it('links social to an unverified password account and clears the squatter password', async () => {
       await request(app)
         .post(`${API}/auth/register`)
         .send(
@@ -85,10 +86,44 @@ describe('Social login API', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.user.email).toBe('social@example.com');
       expect(response.body.data.user.username).toBe('socialuser');
+      expect(response.body.data.user.emailVerified).toBe(true);
 
       const loginResponse = await request(app)
         .post(`${API}/auth/login`)
         .send({ identifier: 'socialuser', password: VALID_PASSWORD });
+
+      expect(loginResponse.status).toBe(400);
+      expect(loginResponse.body.message).toBe('This account uses social login');
+    });
+
+    it('links social to a verified password account and keeps password login', async () => {
+      await request(app)
+        .post(`${API}/auth/register`)
+        .send(
+          validRegisterPayload({
+            email: 'verified-link@example.com',
+            username: 'verifiedlink',
+          }),
+        );
+
+      await verifyRegisteredUser(app, 'verified-link@example.com');
+
+      setSocialTokenVerifierForTests(async () => ({
+        ...googleProfile,
+        email: 'verified-link@example.com',
+        providerId: 'google-sub-verified-link',
+      }));
+
+      const response = await request(app)
+        .post(`${API}/auth/social`)
+        .send({ provider: 'google', idToken: 'valid-google-token' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.user.email).toBe('verified-link@example.com');
+
+      const loginResponse = await request(app)
+        .post(`${API}/auth/login`)
+        .send({ identifier: 'verifiedlink', password: VALID_PASSWORD });
 
       expect(loginResponse.status).toBe(200);
     });

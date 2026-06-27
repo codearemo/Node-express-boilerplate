@@ -27,9 +27,6 @@ const usersSchema = new mongoose.Schema({
   bio: { type: String, required: false },
   // TODO: Add profile picture
   // profilePicture: { type: String, required: false },
-  // TODO: Add followers and following
-  // followers: { type: Number, default: 0 },
-  // following: { type: Number, default: 0 },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

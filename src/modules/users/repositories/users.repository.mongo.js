@@ -45,6 +45,13 @@ async function updatePassword(userId, hashedPassword) {
   });
 }
 
+async function clearPassword(userId) {
+  await UsersModel.findByIdAndUpdate(userId, {
+    $unset: { password: 1 },
+    updatedAt: new Date(),
+  });
+}
+
 async function markEmailVerified(userId) {
   await UsersModel.findByIdAndUpdate(userId, {
     emailVerified: true,
@@ -75,6 +82,7 @@ module.exports = {
   findByUsername,
   findByUsernameWithPassword,
   updatePassword,
+  clearPassword,
   markEmailVerified,
   findByAuthProvider,
   addAuthProvider,

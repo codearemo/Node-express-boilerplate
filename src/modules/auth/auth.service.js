@@ -258,6 +258,7 @@ async function socialLogin(body) {
 
       if (!existingByEmail.emailVerified) {
         await usersRepository.markEmailVerified(existingByEmail._id);
+        await usersRepository.clearPassword(existingByEmail._id);
       }
 
       user = await usersRepository.findById(existingByEmail._id);
