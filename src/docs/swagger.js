@@ -93,6 +93,40 @@ const options = {
             password: { type: 'string', example: 'password123' },
           },
         },
+        ForgotPasswordRequest: {
+          type: 'object',
+          required: ['email', 'resetUrl'],
+          properties: {
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'jane@example.com',
+            },
+            resetUrl: {
+              type: 'string',
+              format: 'uri',
+              description:
+                'Full frontend reset route — server appends `?token=` or `&token=`',
+              example: 'https://myapp.com/reset-password',
+            },
+          },
+        },
+        ResetPasswordRequest: {
+          type: 'object',
+          required: ['token', 'password'],
+          properties: {
+            token: {
+              type: 'string',
+              description: 'Token from the reset link query string',
+              example: 'a1b2c3d4e5f6...',
+            },
+            password: {
+              type: 'string',
+              minLength: 8,
+              example: 'newpassword123',
+            },
+          },
+        },
         LoginResponse: {
           type: 'object',
           properties: {
@@ -131,6 +165,17 @@ const options = {
           properties: {
             data: { $ref: '#/components/schemas/LoginResponse' },
             message: { type: 'string', example: 'Login successful' },
+          },
+        },
+        SuccessResponseMessage: {
+          type: 'object',
+          properties: {
+            data: { type: 'null', nullable: true, example: null },
+            message: {
+              type: 'string',
+              example:
+                'If that email is registered, a password reset link has been sent.',
+            },
           },
         },
         ApiErrorResponse: {

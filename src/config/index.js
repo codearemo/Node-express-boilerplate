@@ -16,6 +16,19 @@ const config = {
   get JWT_EXPIRES_IN() {
     return process.env.JWT_EXPIRES_IN || '7d';
   },
+  get passwordResetExpiresMinutes() {
+    return Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES) || 60;
+  },
+  get mail() {
+    return {
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === 'true',
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    };
+  },
   get mongo() {
     return {
       uri: process.env.MONGO_URI || 'mongodb://localhost:27017/feed-app',

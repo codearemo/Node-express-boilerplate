@@ -87,6 +87,67 @@
 
 /**
  * @openapi
+ * /api/v1/auth/forgot-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Request a password reset link
+ *     description: |
+ *       Send the user's email and the full frontend reset route (`resetUrl`).
+ *       The server appends `?token=...` (or `&token=...`) and emails the link.
+ *       Always returns the same success message to avoid email enumeration.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Generic success (sent if email is registered)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponseMessage'
+ *       400:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/reset-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Set a new password with a reset token
+ *     description: |
+ *       Use the `token` query param from the reset link emailed to the user.
+ *       On success, log in separately with the new password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Password updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponseMessage'
+ *       400:
+ *         description: Validation failed or invalid/expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiErrorResponse'
+ */
+
+/**
+ * @openapi
  * /api/v1/users/me:
  *   get:
  *     tags: [Users]

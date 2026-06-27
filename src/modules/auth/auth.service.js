@@ -7,10 +7,22 @@ const { toPublicUser } = require('../users/users.utils');
 const {
   validateRegister,
   validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
   isEmail,
 } = require('./auth.validation');
 const { signToken } = require('./auth.token');
+const {
+  generatePasswordResetToken,
+  buildResetUrl,
+  hashPasswordResetToken,
+} = require('../../utils/password-reset');
+const { sendPasswordResetEmail } = require('../../utils/mail');
+const config = require('../../config');
 const bcrypt = require('bcrypt');
+
+const FORGOT_PASSWORD_MESSAGE =
+  'If that email is registered, a password reset link has been sent.';
 
 async function register(body) {
   const payload = validateRegister(body);
@@ -68,7 +80,51 @@ async function login(body) {
   };
 }
 
+async function forgotPassword(body) {
+  const { email, resetUrl } = validateForgotPassword(body);
+
+  const user = await usersRepository.findByEmail(email);
+
+  if (user) {
+    const rawToken = generatePasswordResetToken();
+    const hashedToken = hashPasswordResetToken(rawToken);
+    const expiresAt = new Date(
+      Date.now() + config.passwordResetExpiresMinutes * 60 * 1000,
+    );
+
+    await usersRepository.setPasswordResetToken(
+      user._id,
+      hashedToken,
+      expiresAt,
+    );
+
+    const resetLink = buildResetUrl(resetUrl, rawToken);
+    await sendPasswordResetEmail({ to: email, resetLink });
+  }
+
+  return { message: FORGOT_PASSWORD_MESSAGE };
+}
+
+async function resetPassword(body) {
+  const { token, password } = validateResetPassword(body);
+
+  const user = await usersRepository.findByValidPasswordResetToken(token);
+
+  if (!user) {
+    const error = new Error('Invalid or expired reset token');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await usersRepository.updatePasswordAndClearResetToken(
+    user._id,
+    await bcrypt.hash(password, 10),
+  );
+}
+
 module.exports = {
   register,
   login,
+  forgotPassword,
+  resetPassword,
 };

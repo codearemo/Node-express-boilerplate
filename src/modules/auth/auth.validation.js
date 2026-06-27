@@ -5,6 +5,14 @@ const emailField = z.pipe(
   z.email('Invalid email address'),
 );
 
+const passwordField = z
+  .string({ error: 'Password is required' })
+  .min(8, 'Password must be at least 8 characters')
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+  );
+
 const registerSchema = z.object({
   firstName: z.string({ error: 'First name is required' }).trim(),
   lastName: z.string({ error: 'Last name is required' }).trim(),
@@ -14,9 +22,7 @@ const registerSchema = z.object({
     .min(3, 'Username must be at least 3 characters')
     .max(30, 'Username must be at most 30 characters'),
   email: emailField,
-  password: z
-    .string({ error: 'Password is required' })
-    .min(8, 'Password must be at least 8 characters'),
+  password: passwordField,
 });
 
 const loginSchema = z.object({
@@ -25,6 +31,22 @@ const loginSchema = z.object({
     .trim()
     .min(2, 'Email or username must be at least 2 character'),
   password: z.string({ error: 'Password is required' }),
+});
+
+const forgotPasswordSchema = z.object({
+  email: emailField,
+  resetUrl: z.pipe(
+    z.string({ error: 'Reset URL is required' }).trim(),
+    z.url('Reset URL must be a valid URL'),
+  ),
+});
+
+const resetPasswordSchema = z.object({
+  token: z
+    .string({ error: 'Reset token is required' })
+    .trim()
+    .min(1, 'Reset token is required'),
+  password: passwordField,
 });
 
 function isEmail(value) {
@@ -64,8 +86,30 @@ function validateLogin(body) {
   return result.data;
 }
 
+function validateForgotPassword(body) {
+  const result = forgotPasswordSchema.safeParse(body);
+
+  if (!result.success) {
+    throw formatZodError(result.error);
+  }
+
+  return result.data;
+}
+
+function validateResetPassword(body) {
+  const result = resetPasswordSchema.safeParse(body);
+
+  if (!result.success) {
+    throw formatZodError(result.error);
+  }
+
+  return result.data;
+}
+
 module.exports = {
   validateRegister,
   validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
   isEmail,
 };

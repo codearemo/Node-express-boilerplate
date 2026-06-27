@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../src/app');
-const { validRegisterPayload } = require('./helpers');
+const { validRegisterPayload, VALID_PASSWORD } = require('./helpers');
 
 // Supertest hits the Express app directly — no real HTTP server needed
 const API = '/api/v1';
@@ -72,7 +72,7 @@ describe('Auth API', () => {
     it('returns user and token on successful login with username', async () => {
       const response = await request(app)
         .post(`${API}/auth/login`)
-        .send({ identifier: 'jane', password: 'password123' });
+        .send({ identifier: 'jane', password: VALID_PASSWORD });
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
@@ -120,7 +120,7 @@ describe('Auth API', () => {
 
       const loginResponse = await request(app)
         .post(`${API}/auth/login`)
-        .send({ identifier: 'jane', password: 'password123' });
+        .send({ identifier: 'jane', password: VALID_PASSWORD });
 
       const { token } = loginResponse.body.data;
 

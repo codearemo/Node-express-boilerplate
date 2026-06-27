@@ -26,7 +26,31 @@ async function login(req, res, next) {
   }
 }
 
+async function forgotPassword(req, res, next) {
+  try {
+    const result = await authService.forgotPassword(req.body);
+    sendSuccess(res, {
+      message: result.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    await authService.resetPassword(req.body);
+    sendSuccess(res, {
+      message: 'Password updated successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   register,
   login,
+  forgotPassword,
+  resetPassword,
 };

@@ -17,7 +17,12 @@
  */
 function toPublicUser(user) {
   if (!user) return null;
-  const { password: _password, ...publicUser } = user;
+  const {
+    password: _password,
+    passwordResetToken: _passwordResetToken,
+    passwordResetExpiresAt: _passwordResetExpiresAt,
+    ...publicUser
+  } = user;
   return publicUser;
 }
 

@@ -4,6 +4,7 @@
 
 const UsersModel = require('../models/users.model.mongo');
 const { toPlainObject } = require('../users.utils');
+const { hashPasswordResetToken } = require('../../../utils/password-reset');
 
 // Create a new user
 async function create(payload) {
@@ -41,6 +42,35 @@ async function findByUsernameWithPassword(username) {
   return doc;
 }
 
+async function setPasswordResetToken(userId, hashedToken, expiresAt) {
+  await UsersModel.findByIdAndUpdate(userId, {
+    passwordResetToken: hashedToken,
+    passwordResetExpiresAt: expiresAt,
+    updatedAt: new Date(),
+  });
+}
+
+async function findByValidPasswordResetToken(rawToken) {
+  const hashedToken = hashPasswordResetToken(rawToken);
+
+  const doc = await UsersModel.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpiresAt: { $gt: new Date() },
+  })
+    .select('+passwordResetToken +passwordResetExpiresAt')
+    .lean();
+
+  return doc;
+}
+
+async function updatePasswordAndClearResetToken(userId, hashedPassword) {
+  await UsersModel.findByIdAndUpdate(userId, {
+    password: hashedPassword,
+    $unset: { passwordResetToken: '', passwordResetExpiresAt: '' },
+    updatedAt: new Date(),
+  });
+}
+
 module.exports = {
   create,
   findById,
@@ -48,4 +78,7 @@ module.exports = {
   findByEmailWithPassword,
   findByUsername,
   findByUsernameWithPassword,
+  setPasswordResetToken,
+  findByValidPasswordResetToken,
+  updatePasswordAndClearResetToken,
 };

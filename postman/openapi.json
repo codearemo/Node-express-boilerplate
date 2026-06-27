@@ -131,6 +131,45 @@
           }
         }
       },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "resetUrl"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          },
+          "resetUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Full frontend reset route — server appends `?token=` or `&token=`",
+            "example": "https://myapp.com/reset-password"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "password"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token from the reset link query string",
+            "example": "a1b2c3d4e5f6..."
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "newpassword123"
+          }
+        }
+      },
       "LoginResponse": {
         "type": "object",
         "properties": {
@@ -195,6 +234,20 @@
           "message": {
             "type": "string",
             "example": "Login successful"
+          }
+        }
+      },
+      "SuccessResponseMessage": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "null",
+            "nullable": true,
+            "example": null
+          },
+          "message": {
+            "type": "string",
+            "example": "If that email is registered, a password reset link has been sent."
           }
         }
       },
@@ -332,6 +385,88 @@
           },
           "400": {
             "description": "Validation failed or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request a password reset link",
+        "description": "Send the user's email and the full frontend reset route (`resetUrl`).\nThe server appends `?token=...` (or `&token=...`) and emails the link.\nAlways returns the same success message to avoid email enumeration.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generic success (sent if email is registered)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Set a new password with a reset token",
+        "description": "Use the `token` query param from the reset link emailed to the user.\nOn success, log in separately with the new password.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or invalid/expired token",
             "content": {
               "application/json": {
                 "schema": {

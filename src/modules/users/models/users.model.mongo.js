@@ -6,7 +6,9 @@ const usersSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true, select: false }, // select: false means the password is not returned in the response
+  password: { type: String, required: true, select: false },
+  passwordResetToken: { type: String, select: false },
+  passwordResetExpiresAt: { type: Date, select: false },
   bio: { type: String, required: false },
   // TODO: Add profile picture
   // profilePicture: { type: String, required: false },
@@ -30,18 +32,16 @@ const usersSchema = new mongoose.Schema({
  *   const obj = user.toObject(); // will NOT have .password field
  *   const json = user.toJSON(); // will NOT have .password field
  */
-function stripPassword(_doc, ret) {
-  // Remove the password property before returning the object
+function stripSensitiveFields(_doc, ret) {
   delete ret.password;
+  delete ret.passwordResetToken;
+  delete ret.passwordResetExpiresAt;
   return ret;
 }
 
 // Attach the stripping function for both .toJSON() and .toObject()
-// This guarantees password will not be exposed when converting
-// a Mongoose user document to JSON (e.g. for API responses)
-// or to a plain JS object anywhere in the codebase.
-usersSchema.set('toJSON', { transform: stripPassword });
-usersSchema.set('toObject', { transform: stripPassword });
+usersSchema.set('toJSON', { transform: stripSensitiveFields });
+usersSchema.set('toObject', { transform: stripSensitiveFields });
 
 // Create the users model
 const UsersModel = mongoose.model('Users', usersSchema);

@@ -7,7 +7,7 @@ REST API for a social feed application. Built with Express and a layered archite
 ## Features
 
 - **Versioned API** — all routes under `/api/v1`
-- **Auth** — register, login (email or username via single `identifier` field), JWT bearer tokens
+- **Auth** — register, login (email or username via single `identifier` field), forgot/reset password, JWT bearer tokens
 - **Users** — protected profile endpoint (`GET /users/me`)
 - **Validation** — Zod schemas with field-level error `details`
 - **Uniform responses** — consistent `{ data, message, details?, pagination? }` envelope
@@ -49,7 +49,9 @@ feed-app-server/
 │   │   ├── auth/               # Register, login, JWT signing
 │   │   └── users/              # User model, repository, profile
 │   ├── utils/
-│   │   └── api-response.js     # Uniform response envelope
+│   │   ├── api-response.js     # Uniform response envelope
+│   │   ├── mail.js             # SMTP email (password reset)
+│   │   └── password-reset.js   # Reset token generation and link building
 │   ├── app.js                  # Express app setup
 │   └── server.js               # Entry point
 ├── .env                        # Local secrets (not committed)
@@ -112,6 +114,15 @@ SQL_PORT=3306
 SQL_DATABASE=feed_app
 SQL_USER=root
 SQL_PASSWORD=
+
+# Password reset email (SMTP)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-user
+SMTP_PASS=your-smtp-password
+SMTP_FROM="Feed App <noreply@example.com>"
+PASSWORD_RESET_EXPIRES_MINUTES=60
 ```
 
 | Variable | Required | Description |
@@ -122,9 +133,17 @@ SQL_PASSWORD=
 | `DB_DRIVER` | No | `mongo` or `sql` (default: `mongo`) |
 | `MONGO_URI` | Yes* | MongoDB connection string |
 | `SQL_*` | Yes** | MySQL settings when using SQL driver |
+| `SMTP_HOST` | Yes*** | SMTP server hostname |
+| `SMTP_PORT` | No | SMTP port (default: `587`) |
+| `SMTP_SECURE` | No | Use TLS (`true`/`false`, default: `false`) |
+| `SMTP_USER` | Yes*** | SMTP username |
+| `SMTP_PASS` | Yes*** | SMTP password |
+| `SMTP_FROM` | No | From address (defaults to `SMTP_USER`) |
+| `PASSWORD_RESET_EXPIRES_MINUTES` | No | Reset token TTL (default: `60`) |
 
 \* Required when `DB_DRIVER=mongo`  
-\** Required when `DB_DRIVER=sql`
+\** Required when `DB_DRIVER=sql`  
+\*** Required when using forgot-password (real SMTP in dev and prod)
 
 ### Run the server
 
@@ -153,6 +172,8 @@ Interactive docs: [http://localhost:3003/api-docs](http://localhost:3003/api-doc
 | `GET` | `/health` | No | Health check |
 | `POST` | `/api/v1/auth/register` | No | Create a new user |
 | `POST` | `/api/v1/auth/login` | No | Login, returns JWT |
+| `POST` | `/api/v1/auth/forgot-password` | No | Email a password reset link |
+| `POST` | `/api/v1/auth/reset-password` | No | Set new password with reset token |
 | `GET` | `/api/v1/users/me` | Bearer JWT | Get logged-in user profile |
 
 ### Register
@@ -188,6 +209,38 @@ Response includes a JWT in `data.token`. Send it on protected routes:
 
 ```http
 Authorization: Bearer <token>
+```
+
+### Forgot password
+
+The client sends the **full frontend reset route**. The server appends `?token=...` (or `&token=...` if the URL already has query params) and emails the link.
+
+```http
+POST /api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "resetUrl": "https://myapp.com/reset-password"
+}
+```
+
+Always returns the same success message — even if the email is not registered.
+
+In non-production environments, the reset link is also logged to the console.
+
+### Reset password
+
+Use the `token` from the emailed link. After success, log in separately with the new password.
+
+```http
+POST /api/v1/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "<token-from-email-link>",
+  "password": "newpassword123"
+}
 ```
 
 ### Get profile
@@ -327,7 +380,7 @@ npm test           # run once
 npm run test:watch # re-run on file changes
 ```
 
-Tests live in `tests/` and cover register, login, validation errors, and protected `/users/me`.
+Tests live in `tests/` and cover register, login, validation errors, protected `/users/me`, and password reset.
 
 ---
 
