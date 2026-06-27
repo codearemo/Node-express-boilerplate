@@ -3,6 +3,15 @@
 // ******************************************************
 
 // Getters read process.env at access time (allows tests to override before connect)
+
+function parseCommaSeparatedList(value) {
+  if (!value?.trim()) {
+    return [];
+  }
+
+  return value.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
 const config = {
   get port() {
     return Number(process.env.PORT) || 3000;
@@ -18,6 +27,14 @@ const config = {
   },
   get passwordResetExpiresMinutes() {
     return Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES) || 60;
+  },
+  get cors() {
+    return {
+      origins: parseCommaSeparatedList(process.env.ALLOWED_ORIGINS),
+    };
+  },
+  get jsonBodyLimit() {
+    return process.env.JSON_BODY_LIMIT || '10kb';
   },
   get rateLimit() {
     const authWindowMs = 5 * 60 * 1000;
@@ -84,3 +101,4 @@ const config = {
 };
 
 module.exports = config;
+module.exports.parseCommaSeparatedList = parseCommaSeparatedList;

@@ -13,6 +13,7 @@ REST API for a social feed application. Built with Express and a layered archite
 - **Uniform responses** — consistent `{ data, message, details?, pagination? }` envelope
 - **Password security** — bcrypt hashing, passwords never returned in API responses
 - **Rate limiting** — global per-IP baseline on all routes, plus stricter limits on auth endpoints
+- **Security headers** — Helmet; CORS via configurable origin list; JSON body size limit
 - **API docs** — Swagger UI at `/api-docs`, OpenAPI JSON at `/api-docs.json`
 - **Postman** — collection generated from OpenAPI via `npm run postman:build`
 - **Linting & formatting** — ESLint + Prettier
@@ -45,7 +46,7 @@ feed-app-server/
 │   ├── config/                 # Environment-based configuration
 │   ├── database/               # DB connection lifecycle (mongo | sql)
 │   ├── docs/                   # OpenAPI spec (paths.js + swagger.js)
-│   ├── middleware/             # authenticate, error handler, rate limit
+│   ├── middleware/             # authenticate, error handler, rate limit, security
 │   ├── modules/
 │   │   ├── auth/               # Register, login, JWT signing
 │   │   └── users/              # User model, repository, profile
@@ -102,6 +103,12 @@ PORT=3003
 JWT_SECRET=your-long-random-secret
 JWT_EXPIRES_IN=7d
 
+# CORS — comma-separated list of allowed browser origins
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+
+# Max JSON request body size (default: 10kb)
+JSON_BODY_LIMIT=10kb
+
 # Database driver: mongo | sql
 DB_DRIVER=mongo
 
@@ -143,6 +150,8 @@ RATE_LIMIT_RESET_PASSWORD_WINDOW_MS=300000
 | `PORT` | No | Server port (default: `3000`) |
 | `JWT_SECRET` | Yes | Secret for signing JWTs |
 | `JWT_EXPIRES_IN` | No | Token expiry (default: `7d`) |
+| `ALLOWED_ORIGINS` | No | Comma-separated frontend URLs for CORS — required before a browser app can call the API cross-origin |
+| `JSON_BODY_LIMIT` | No | Max JSON body size (default: `10kb`) |
 | `DB_DRIVER` | No | `mongo` or `sql` (default: `mongo`) |
 | `MONGO_URI` | Yes* | MongoDB connection string |
 | `SQL_*` | Yes** | MySQL settings when using SQL driver |

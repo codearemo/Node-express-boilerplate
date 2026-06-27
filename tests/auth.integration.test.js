@@ -145,6 +145,18 @@ describe('Auth API', () => {
         message: 'Invalid credentials',
       });
     });
+
+    it('returns 413 when the JSON body exceeds the size limit', async () => {
+      const response = await request(app)
+        .post(`${API}/auth/login`)
+        .send({ identifier: 'jane', password: 'x'.repeat(20_000) });
+
+      expect(response.status).toBe(413);
+      expect(response.body).toMatchObject({
+        data: null,
+        message: 'Request body too large',
+      });
+    });
   });
 
   describe('GET /users/me', () => {

@@ -10,13 +10,21 @@ const app = express();
 
 // Import versioned API routes
 const v1Routes = require('./api/v1');
+const config = require('./config');
 const errorHandler = require('./middleware/error.middleware');
 const { globalLimiter } = require('./middleware/rate-limit.middleware');
+const {
+  helmetMiddleware,
+  corsMiddleware,
+} = require('./middleware/security.middleware');
 const swaggerUi = require('swagger-ui-express');
 const { getSwaggerSpec } = require('./docs/swagger');
 
-// Middleware to parse JSON bodies into req.body
-app.use(express.json());
+app.use(helmetMiddleware);
+app.use(corsMiddleware);
+
+// JSON body parser with explicit size cap (see JSON_BODY_LIMIT in .env)
+app.use(express.json({ limit: config.jsonBodyLimit }));
 
 // Baseline per-IP rate limit for every route (auth routes also have stricter limits)
 app.use(globalLimiter);
