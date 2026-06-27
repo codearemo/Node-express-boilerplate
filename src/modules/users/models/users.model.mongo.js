@@ -25,8 +25,12 @@ const usersSchema = new mongoose.Schema({
   authProviders: { type: [authProviderSchema], default: [] },
   emailVerified: { type: Boolean, default: false },
   bio: { type: String, required: false },
-  // TODO: Add profile picture
-  // profilePicture: { type: String, required: false },
+  profilePicture: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Files',
+    required: false,
+    default: null,
+  },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

@@ -668,4 +668,73 @@
  *               $ref: '#/components/schemas/ApiUserNotFoundError'
  */
 
+/**
+ * @openapi
+ * /api/v1/users/me:
+ *   patch:
+ *     tags: [Users]
+ *     summary: Update logged-in user profile
+ *     description: |
+ *       Partial update for the authenticated user. Send one or more of
+ *       `firstName`, `lastName`, `username`, `bio`, or `profilePicture`.
+ *       Email and password cannot be changed here.
+ *       For `profilePicture`, send the upload `id` from `POST /uploads`, or `null` to remove.
+ *       Responses return `profilePicture` as the full upload file object (including `url`).
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateProfileRequest'
+ *     responses:
+ *       200:
+ *         description: Profile updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponseUserUpdated'
+ *       400:
+ *         description: Validation failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiValidationErrorResponse'
+ *       401:
+ *         description: Missing, invalid, or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ApiAuthRequiredError'
+ *                 - $ref: '#/components/schemas/ApiInvalidTokenError'
+ *       403:
+ *         description: Email not verified or account inactive
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ApiEmailNotVerifiedError'
+ *                 - $ref: '#/components/schemas/ApiInactiveAccountError'
+ *       409:
+ *         description: Username already in use
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiConflictError'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiUserNotFoundError'
+ *       413:
+ *         description: JSON body exceeds JSON_BODY_LIMIT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiJsonBodyTooLargeError'
+ */
+
 module.exports = {};

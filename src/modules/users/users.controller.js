@@ -13,6 +13,22 @@ async function getLoggedInUserProfile(req, res, next) {
   }
 }
 
+async function updateLoggedInUserProfile(req, res, next) {
+  try {
+    const user = await usersService.updateLoggedInUserProfile(
+      req.user.id,
+      req.body,
+    );
+    sendSuccess(res, {
+      message: 'Profile updated successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getLoggedInUserProfile,
+  updateLoggedInUserProfile,
 };

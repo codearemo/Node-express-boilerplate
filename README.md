@@ -271,6 +271,7 @@ Interactive docs: [http://localhost:3003/api-docs](http://localhost:3003/api-doc
 | `GET` | `/api/v1/uploads/:fileId/download` | Bearer JWT | Download an active file (used when `UPLOAD_PUBLIC_ACCESS=false`) |
 | `DELETE` | `/api/v1/uploads/:fileId` | Bearer JWT | Soft-delete by `id` (recommended) or `name` from upload response |
 | `GET` | `/api/v1/users/me` | Bearer JWT | Get logged-in user profile |
+| `PATCH` | `/api/v1/users/me` | Bearer JWT | Update logged-in user profile |
 
 ### Register
 
@@ -437,6 +438,39 @@ Content-Type: application/json
 GET /api/v1/users/me
 Authorization: Bearer <token>
 ```
+
+### Update profile
+
+Partial update — send one or more fields. Email and password cannot be changed here.
+
+```http
+PATCH /api/v1/users/me
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "firstName": "Janet",
+  "lastName": "Smith",
+  "username": "janet",
+  "bio": "Building cool things."
+}
+```
+
+Updatable fields: `firstName`, `lastName`, `username`, `bio` (max 500 characters), `profilePicture` (upload file id or `null` to remove).
+
+To set a profile picture, upload an image via `POST /uploads`, then pass the returned `id`:
+
+```http
+PATCH /api/v1/users/me
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "profilePicture": "664a1b2c3d4e5f678901234567"
+}
+```
+
+`GET /users/me` returns `profilePicture` as the full upload object (including `url`), or `null`.
 
 ### Upload files
 

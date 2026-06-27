@@ -7,4 +7,6 @@ const router = express.Router();
 // JWT required — authenticate sets req.user from the Bearer token
 router.get('/me', authenticate, usersController.getLoggedInUserProfile);
 
+router.patch('/me', authenticate, usersController.updateLoggedInUserProfile);
+
 module.exports = router;

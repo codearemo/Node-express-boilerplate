@@ -74,6 +74,16 @@ async function addAuthProvider(userId, provider, providerId) {
   });
 }
 
+async function updateProfile(userId, fields) {
+  const doc = await UsersModel.findByIdAndUpdate(
+    userId,
+    { ...fields, updatedAt: new Date() },
+    { returnDocument: 'after', runValidators: true },
+  ).lean();
+
+  return doc;
+}
+
 module.exports = {
   create,
   findById,
@@ -86,4 +96,5 @@ module.exports = {
   markEmailVerified,
   findByAuthProvider,
   addAuthProvider,
+  updateProfile,
 };

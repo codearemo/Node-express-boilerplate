@@ -2,6 +2,8 @@
 // USERS UTILS — safe shapes for data leaving the users layer
 // ******************************************************
 
+const { resolveProfilePictureForUser } = require('./users.profile');
+
 /**
  * Returns a copy of a user object that is safe to send to clients.
  *
@@ -20,8 +22,28 @@ function toPublicUser(user) {
   const {
     password: _password,
     authProviders: _authProviders,
+    profilePicture: _profilePicture,
     ...publicUser
   } = user;
+  return publicUser;
+}
+
+/**
+ * Returns a client-safe user with profilePicture hydrated to the public
+ * upload file shape (or null). Raw ObjectId refs are never exposed.
+ */
+async function toPublicUserWithProfile(user) {
+  const publicUser = toPublicUser(user);
+
+  if (!publicUser) {
+    return null;
+  }
+
+  publicUser.profilePicture = await resolveProfilePictureForUser(
+    String(user._id),
+    user.profilePicture,
+  );
+
   return publicUser;
 }
 
@@ -46,5 +68,6 @@ function toPlainObject(doc) {
 
 module.exports = {
   toPublicUser,
+  toPublicUserWithProfile,
   toPlainObject,
 };

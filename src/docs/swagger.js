@@ -63,6 +63,13 @@ const options = {
               example: 'jane@example.com',
             },
             bio: { type: 'string', nullable: true },
+            profilePicture: {
+              oneOf: [
+                { $ref: '#/components/schemas/UploadFile' },
+                { type: 'null' },
+              ],
+              nullable: true,
+            },
             status: {
               type: 'string',
               enum: ['active', 'inactive'],
@@ -252,6 +259,46 @@ const options = {
             message: {
               type: 'string',
               example: 'User registered successfully',
+            },
+          },
+        },
+        UpdateProfileRequest: {
+          type: 'object',
+          minProperties: 1,
+          properties: {
+            firstName: { type: 'string', minLength: 1, example: 'Janet' },
+            lastName: { type: 'string', minLength: 1, example: 'Smith' },
+            username: {
+              type: 'string',
+              minLength: 3,
+              maxLength: 30,
+              example: 'janet',
+            },
+            bio: {
+              type: 'string',
+              maxLength: 500,
+              example: 'Building cool things.',
+            },
+            profilePicture: {
+              oneOf: [
+                {
+                  type: 'string',
+                  description:
+                    'Active upload file id from POST /uploads (images only). Send null to remove.',
+                  example: '664a1b2c3d4e5f678901234567',
+                },
+                { type: 'null' },
+              ],
+            },
+          },
+        },
+        SuccessResponseUserUpdated: {
+          type: 'object',
+          properties: {
+            data: { $ref: '#/components/schemas/User' },
+            message: {
+              type: 'string',
+              example: 'Profile updated successfully',
             },
           },
         },
