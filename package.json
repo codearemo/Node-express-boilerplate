@@ -1,7 +1,7 @@
 {
-  "name": "feed-app-server",
+  "name": "express-api-boilerplate",
   "version": "1.0.0",
-  "description": "Feed app API with switchable MongoDB and SQL backends",
+  "description": "Production-ready Express REST API boilerplate — auth, 2FA, uploads, WebSockets, OpenAPI docs",
   "license": "ISC",
   "author": "",
   "type": "commonjs",
@@ -36,6 +36,7 @@
     "nodemailer": "^9.0.1",
     "otplib": "^13.4.1",
     "sequelize": "^6.37.8",
+    "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "zod": "^4.4.3"
@@ -48,6 +49,7 @@
     "mongodb-memory-server": "^11.2.0",
     "openapi-to-postmanv2": "^6.1.0",
     "prettier": "^3.8.4",
+    "socket.io-client": "^4.8.3",
     "supertest": "^7.2.2",
     "vitest": "^4.1.9"
   }

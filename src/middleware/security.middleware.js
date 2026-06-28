@@ -29,4 +29,5 @@ const helmetMiddleware = helmet({
 module.exports = {
   helmetMiddleware,
   corsMiddleware,
+  getCorsOriginOption,
 };

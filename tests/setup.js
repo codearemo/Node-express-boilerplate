@@ -12,10 +12,10 @@ process.env.DB_DRIVER = 'mongo';
 const os = require('os');
 const path = require('path');
 
-process.env.UPLOAD_DIR = path.join(os.tmpdir(), 'feed-app-test-uploads');
+process.env.UPLOAD_DIR = path.join(os.tmpdir(), 'api-boilerplate-test-uploads');
 process.env.UPLOAD_ARCHIVE_DIR = path.join(
   os.tmpdir(),
-  'feed-app-test-uploads-archive',
+  'api-boilerplate-test-uploads-archive',
 );
 process.env.UPLOAD_DRIVER = 'local';
 

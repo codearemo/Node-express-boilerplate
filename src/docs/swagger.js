@@ -10,10 +10,10 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Feed App API',
+      title: 'Express API Boilerplate',
       version: '1.0.0',
       description:
-        'Feed app REST API. Import `/api-docs.json` into Postman to generate a collection.',
+        'Express REST API boilerplate. Import `/api-docs.json` into Postman to generate a collection.',
     },
     servers: [
       {

@@ -5,9 +5,12 @@
 // Load environment variables
 require('dotenv').config();
 
+const http = require('http');
+
 // Import the app and config
 const app = require('./app');
 const config = require('./config');
+const { initSocket } = require('./socket');
 
 // Import the database connection
 const { connect } = require('./database');
@@ -45,9 +48,18 @@ async function start() {
   // Connect to the database
   await connect();
 
-  // Start the server
-  app.listen(config.port, () => {
+  const server = http.createServer(app);
+
+  if (config.socket.enabled) {
+    initSocket(server);
+  }
+
+  server.listen(config.port, () => {
     console.log(`Server is running on port ${config.port}`);
+
+    if (config.socket.enabled) {
+      console.log(`WebSocket server ready at path ${config.socket.path}`);
+    }
   });
 }
 

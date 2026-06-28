@@ -1,15 +1,28 @@
-# Feed App Server
+# Express API Boilerplate
 
-REST API for a social feed application. Built with Express and a layered architecture that separates HTTP, business logic, and data access. Supports versioned routes, JWT authentication, Zod validation, and switchable database drivers (MongoDB today, SQL planned).
+A production-ready **Express REST API starter** you can fork for new projects. Layered architecture (routes → controller → service → repository → model), JWT auth with refresh tokens, email OTP verification, TOTP 2FA, social login (Google/Apple), file uploads (local/S3/Cloudinary), Socket.IO, OpenAPI docs, and Vitest integration tests.
+
+---
+
+## Using as a boilerplate
+
+1. **Fork or clone** this repo and rename the project folder.
+2. **Update branding** — search for `express-api-boilerplate`, `Express API Boilerplate`, and `my-app` / `my_app`; replace with your product name.
+3. **Configure `.env`** — copy `.env.example`, set `JWT_SECRET`, `MONGO_URI`, SMTP, and optional social/upload keys.
+4. **Customize OpenAPI** — edit titles in `src/docs/swagger.js` and route docs in `src/docs/paths.js`, then run `npm run postman:build`.
+5. **Add modules** — follow the pattern in `src/modules/users/` or `src/modules/auth/` (routes, controller, `services/`, repository, model).
+6. **Prune what you don't need** — e.g. remove 2FA routes, social auth, or upload drivers if your app is simpler.
 
 ---
 
 ## Features
 
 - **Versioned API** — all routes under `/api/v1`
-- **Auth** — register, email verification (OTP), login (email or username via single `identifier` field), social login (Google, Apple), OTP forgot/reset password, JWT access + refresh tokens
+- **Auth** — register, email verification (OTP), login, social login (Google, Apple), OTP forgot/reset password, JWT access + refresh tokens
+- **2FA** — TOTP authenticator apps (setup, confirm, login challenge, disable)
 - **Users** — protected profile (`GET/PATCH /users/me`) with optional profile picture via upload file reference
 - **Uploads** — multipart upload (`POST /uploads`) with switchable storage: `local`, `s3`, or `cloudinary`
+- **WebSockets** — Socket.IO with JWT handshake, per-user rooms
 - **Validation** — Zod schemas with field-level error `details`
 - **Uniform responses** — consistent `{ data, message, details?, pagination? }` envelope
 - **Password security** — bcrypt hashing, passwords never returned in API responses
@@ -44,27 +57,26 @@ REST API for a social feed application. Built with Express and a layered archite
 ## Project Structure
 
 ```
-feed-app-server/
+<your-project>/
 ├── postman/                    # Generated Postman collection & environment
 ├── scripts/
 │   └── build-postman.js        # OpenAPI → Postman converter
 ├── src/
-│   ├── api/v1/                 # Version router (mounts auth + users)
+│   ├── api/v1/                 # Version router (mounts module routes)
 │   ├── config/                 # Environment-based configuration
 │   ├── database/               # DB connection lifecycle (mongo | sql)
 │   ├── docs/                   # OpenAPI spec (paths.js + swagger.js)
 │   ├── middleware/             # authenticate, error handler, rate limit, security
 │   ├── modules/
-│   │   ├── auth/               # Register, login, JWT signing
-│   │   └── users/              # User model, repository, profile
-│   ├── utils/
-│   │   ├── api-response.js     # Uniform response envelope
-│   │   ├── mail.js             # SMTP email (OTP delivery)
-│   │   └── otp.js              # OTP generation and hashing
+│   │   ├── auth/               # Auth routes, services/, repositories, models
+│   │   ├── files/              # Uploads — storage drivers, soft delete
+│   │   └── users/              # User profile
+│   ├── socket/                 # Socket.IO — JWT auth, connection handlers
+│   ├── utils/                  # Shared helpers (mail, otp, totp, etc.)
 │   ├── app.js                  # Express app setup
-│   └── server.js               # Entry point
-├── .env                        # Local secrets (not committed)
-├── eslint.config.js
+│   └── server.js               # HTTP server + Socket.IO entry point
+├── tests/                      # Vitest integration & unit tests
+├── .env.example
 └── package.json
 ```
 
@@ -103,7 +115,7 @@ HTTP Request
 
 ```bash
 git clone <repository-url>
-cd feed-app-server
+cd <your-project>
 npm install
 ```
 
@@ -141,13 +153,13 @@ JSON_BODY_LIMIT=10kb
 DB_DRIVER=mongo
 
 # MongoDB
-MONGO_URI=mongodb://localhost:27017/feed-app
+MONGO_URI=mongodb://localhost:27017/my-app
 
 # SQL (when DB_DRIVER=sql)
 SQL_DIALECT=mysql
 SQL_HOST=localhost
 SQL_PORT=3306
-SQL_DATABASE=feed_app
+SQL_DATABASE=my_app
 SQL_USER=root
 SQL_PASSWORD=
 
@@ -157,7 +169,7 @@ SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-smtp-user
 SMTP_PASS=your-smtp-password
-SMTP_FROM="Feed App <noreply@example.com>"
+SMTP_FROM="App <noreply@example.com>"
 OTP_EXPIRES_MINUTES=10
 OTP_MAX_ATTEMPTS=5
 
@@ -241,7 +253,7 @@ RATE_LIMIT_SOCIAL_LOGIN_WINDOW_MS=300000
 | `CLOUDINARY_CLOUD_NAME`                    | Yes***   | Cloudinary cloud name                                                                                                                    |
 | `CLOUDINARY_API_KEY`                       | Yes***   | Cloudinary API key                                                                                                                       |
 | `CLOUDINARY_API_SECRET`                    | Yes***   | Cloudinary API secret                                                                                                                    |
-| `CLOUDINARY_FOLDER`                        | No***    | Upload folder (default: `feed-app`)                                                                                                      |
+| `CLOUDINARY_FOLDER`                        | No***    | Upload folder (default: `my-app`)                                                                                                        |
 
 
  Used when `UPLOAD_DRIVER=local`  
@@ -733,6 +745,30 @@ Every request passes a **global** per-IP limit first. Auth routes also have **st
 
 When exceeded, the API returns **429** with `{ data: null, message: "Too many …" }`. Tune via `RATE_LIMIT_`* env vars. Limits are disabled when `NODE_ENV=test`.
 
+### WebSockets (Socket.IO)
+
+Real-time connections use **Socket.IO** on the same port as the REST API (path `/socket.io` by default). Authentication uses the same **access JWT** as HTTP — pass it in the handshake:
+
+```javascript
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3003', {
+  auth: { token: accessJwt },
+});
+
+socket.on('connected', ({ userId }) => {
+  console.log('socket ready for user', userId);
+});
+```
+
+Each authenticated socket joins a private room `user:<userId>` so the server can target events later via `getIo().to(userRoom(userId)).emit(...)`.
+
+| Env var | Default | Description |
+|---------|---------|-------------|
+| `SOCKET_ENABLED` | `true` | Set `false` to disable WebSocket server |
+| `SOCKET_PATH` | `/socket.io` | Socket.IO HTTP path |
+| `ALLOWED_ORIGINS` | — | Same CORS origins as REST (required for browser clients) |
+
 ---
 
 ## API Documentation
@@ -760,8 +796,8 @@ npm run postman:build
 
 Outputs to `postman/`:
 
-- `feed-app.postman_collection.json`
-- `feed-app.local.postman_environment.json`
+- `api.postman_collection.json`
+- `api.local.postman_environment.json`
 - `openapi.json`
 
 Import both JSON files into Postman, or import directly from `http://localhost:3003/api-docs.json` when the server is running.
@@ -796,18 +832,19 @@ npm test           # run once
 npm run test:watch # re-run on file changes
 ```
 
-Tests live under `tests/`, grouped by area (`auth/`, `files/`, `middleware/`, `utils/`, `config/`, `health/`). Shared setup is in `tests/setup.js`; helpers in `tests/helpers.js`.
+Tests live under `tests/`, grouped by area (`auth/`, `files/`, `socket/`, `middleware/`, `utils/`, `config/`, `health/`). Shared setup is in `tests/setup.js`; helpers in `tests/helpers.js`.
 
 ---
 
 ### Module layout
 
 
-| Module    | Responsibility                                         |
-| --------- | ------------------------------------------------------ |
-| `auth.*`  | Identity flows — register, login, JWT                  |
-| `users.*` | User entity — model, repository, profile               |
-| `files.*` | File uploads — storage drivers, ownership, soft delete |
+| Module    | Responsibility                                                         |
+| --------- | ---------------------------------------------------------------------- |
+| `auth.*`  | Identity — register, login, social, 2FA, OTP, JWT (`services/`)      |
+| `users.*` | User entity — model, repository, profile                               |
+| `files.*` | File uploads — storage drivers, ownership, soft delete                 |
+| `socket/` | Real-time — Socket.IO auth, per-user rooms, `getIo()` for server emits |
 
 
 ### Layer rules

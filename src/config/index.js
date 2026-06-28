@@ -52,6 +52,12 @@ const config = {
       origins: parseCommaSeparatedList(process.env.ALLOWED_ORIGINS),
     };
   },
+  get socket() {
+    return {
+      enabled: process.env.SOCKET_ENABLED !== 'false',
+      path: process.env.SOCKET_PATH || '/socket.io',
+    };
+  },
   get jsonBodyLimit() {
     return process.env.JSON_BODY_LIMIT || '10kb';
   },

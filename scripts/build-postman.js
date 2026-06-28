@@ -14,10 +14,10 @@ const convertOpenApi = promisify(Converter.convert).bind(Converter);
 
 const outDir = path.join(__dirname, '../postman');
 const openapiPath = path.join(outDir, 'openapi.json');
-const collectionPath = path.join(outDir, 'feed-app.postman_collection.json');
+const collectionPath = path.join(outDir, 'api.postman_collection.json');
 const environmentPath = path.join(
   outDir,
-  'feed-app.local.postman_environment.json',
+  'api.local.postman_environment.json',
 );
 
 async function buildPostmanAssets() {
@@ -45,7 +45,7 @@ async function buildPostmanAssets() {
 
   // 3. Local Postman environment (baseUrl + token placeholder)
   const environment = {
-    name: 'Feed App Local',
+    name: 'API Local',
     values: [
       {
         key: 'baseUrl',

@@ -10,7 +10,7 @@ const sampleFile = {
   encoding: '7bit',
 };
 
-function mockUploadSuccess(publicId = 'feed-app/a1b2c3d4e5f678901234567890abcd12') {
+function mockUploadSuccess(publicId = 'my-app/a1b2c3d4e5f678901234567890abcd12') {
   uploadStreamMock.mockImplementationOnce((_options, callback) => ({
     end: () => {
       callback(null, {
@@ -29,7 +29,7 @@ describe('Cloudinary storage driver', () => {
     destroyMock.mockReset();
     renameMock.mockReset();
     uploadStreamMock.mockReset();
-    process.env.CLOUDINARY_FOLDER = 'feed-app';
+    process.env.CLOUDINARY_FOLDER = 'my-app';
 
     storage = require('../../src/modules/files/storage/storage.cloudinary');
     storage.__setUploaderForTests({
@@ -45,7 +45,7 @@ describe('Cloudinary storage driver', () => {
   });
 
   it('rolls back successful uploads when a later file fails', async () => {
-    mockUploadSuccess('feed-app/file-one');
+    mockUploadSuccess('my-app/file-one');
     uploadStreamMock.mockImplementationOnce((_options, callback) => ({
       end: () => {
         callback(new Error('upload failed'));
@@ -57,27 +57,27 @@ describe('Cloudinary storage driver', () => {
       storage.storeFiles([sampleFile, { ...sampleFile, originalname: 'two.jpg' }]),
     ).rejects.toThrow('upload failed');
 
-    expect(destroyMock).toHaveBeenCalledWith('feed-app/file-one', {
+    expect(destroyMock).toHaveBeenCalledWith('my-app/file-one', {
       resource_type: 'auto',
     });
   });
 
   it('archives a file by renaming it into the archive folder', async () => {
     renameMock.mockResolvedValue({
-      public_id: 'feed-app/_archive/a1b2c3d4e5f678901234567890abcd12',
+      public_id: 'my-app/_archive/a1b2c3d4e5f678901234567890abcd12',
     });
 
-    const name = 'feed-app/a1b2c3d4e5f678901234567890abcd12';
+    const name = 'my-app/a1b2c3d4e5f678901234567890abcd12';
     const result = await storage.archiveFile(name);
 
     expect(renameMock).toHaveBeenCalledWith(
       name,
-      'feed-app/_archive/a1b2c3d4e5f678901234567890abcd12',
+      'my-app/_archive/a1b2c3d4e5f678901234567890abcd12',
       { resource_type: 'auto' },
     );
     expect(result).toEqual({
       name,
-      archivedName: 'feed-app/_archive/a1b2c3d4e5f678901234567890abcd12',
+      archivedName: 'my-app/_archive/a1b2c3d4e5f678901234567890abcd12',
       provider: 'cloudinary',
     });
   });
@@ -88,7 +88,7 @@ describe('Cloudinary storage driver', () => {
     renameMock.mockRejectedValueOnce(notFound);
 
     await expect(
-      storage.archiveFile('feed-app/a1b2c3d4e5f678901234567890abcd12'),
+      storage.archiveFile('my-app/a1b2c3d4e5f678901234567890abcd12'),
     ).rejects.toMatchObject({
       message: 'File not found',
       statusCode: 404,

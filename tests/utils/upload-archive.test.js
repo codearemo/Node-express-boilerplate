@@ -26,13 +26,13 @@ describe('upload archive helpers', () => {
 
   it('builds Cloudinary archive public_ids under the upload folder', () => {
     const archivedId = buildCloudinaryArchiveId(
-      'feed-app/a1b2c3d4e5f678901234567890abcd12',
-      'feed-app',
+      'my-app/a1b2c3d4e5f678901234567890abcd12',
+      'my-app',
       '_archive',
     );
 
     expect(archivedId).toBe(
-      'feed-app/_archive/a1b2c3d4e5f678901234567890abcd12',
+      'my-app/_archive/a1b2c3d4e5f678901234567890abcd12',
     );
   });
 });
