@@ -132,7 +132,7 @@ cp .env.example .env
 Or create a `.env` file manually:
 
 ```env
-PORT=3003
+PORT=3000
 
 # JWT — access token (short-lived) + refresh token (long-lived, stored hashed in DB)
 JWT_SECRET=your-long-random-secret
@@ -273,7 +273,7 @@ npm run dev
 npm start
 ```
 
-Server starts at `http://localhost:3003` (or your `PORT`).
+Server starts at `http://localhost:3000` (or your `PORT`).
 
 ---
 
@@ -281,9 +281,9 @@ Server starts at `http://localhost:3003` (or your `PORT`).
 
 ## API Reference
 
-Base URL: `http://localhost:3003/api/v1`
+Base URL: `http://localhost:3000/api/v1`
 
-Interactive docs: [http://localhost:3003/api-docs](http://localhost:3003/api-docs)
+Interactive docs: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ### Endpoints
 
@@ -597,7 +597,7 @@ files: <photo-two.jpg>
   "data": [
     {
       "id": "664a1b2c3d4e5f678901234567",
-      "url": "http://localhost:3003/uploads/a1b2c3d4e5f678901234567890abcd12.jpg",
+      "url": "http://localhost:3000/uploads/a1b2c3d4e5f678901234567890abcd12.jpg",
       "name": "a1b2c3d4e5f678901234567890abcd12.jpg",
       "originalName": "photo-one.jpg",
       "mimeType": "image/jpeg",
@@ -752,7 +752,7 @@ Real-time connections use **Socket.IO** on the same port as the REST API (path `
 ```javascript
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3003', {
+const socket = io('http://localhost:3000', {
   auth: { token: accessJwt },
 });
 
@@ -800,7 +800,7 @@ Outputs to `postman/`:
 - `api.local.postman_environment.json`
 - `openapi.json`
 
-Import both JSON files into Postman, or import directly from `http://localhost:3003/api-docs.json` when the server is running.
+Import both JSON files into Postman, or import directly from `http://localhost:3000/api-docs.json` when the server is running.
 
 ---
 

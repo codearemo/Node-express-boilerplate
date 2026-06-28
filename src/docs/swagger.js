@@ -440,7 +440,7 @@ const options = {
             url: {
               type: 'string',
               format: 'uri',
-              example: 'http://localhost:3003/uploads/a1b2c3d4e5f6.jpg',
+              example: 'http://localhost:3000/uploads/a1b2c3d4e5f6.jpg',
             },
             name: {
               type: 'string',

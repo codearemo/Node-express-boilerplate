@@ -7,7 +7,7 @@
 //
 // Client example:
 //   import { io } from 'socket.io-client';
-//   const socket = io('http://localhost:3003', {
+//   const socket = io('http://localhost:3000', {
 //     auth: { token: accessJwt },
 //   });
 //   socket.on('connected', ({ userId }) => { ... });
